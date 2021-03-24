@@ -17,6 +17,6 @@ Each subsequent document is dedicated to a particular text analysis technique, a
 ## Quick links for each week
 
 - Introduction: \[[Link](https://raw.githack.com/cjbarrie/CTA-Ed/main/00-intro/01-intro.html)\]
-- Exercise 1: Text as data---word frequency analysis: 
+- Exercise 1: Text as data---word frequency analysis: \[[Link](https://raw.githack.com/cjbarrie/CTA-Ed/main/01-word-freq/01-word-freq.html)\]
 - Exercise 2: Text as data---topic modelling
 - Exercise 3: Text as data---word embedding
