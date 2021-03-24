@@ -147,7 +147,7 @@ ggplot(data = mpg) +
   geom_point(mapping = aes(x = displ, y = hwy))
 ```
 
-![](01-intro_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+![](00-intro_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
 
 If we wanted to save where we'd got to with making our plots, we would want to save our scripts, and maybe the data we used as well, so that we could return to it at a later stage.
 

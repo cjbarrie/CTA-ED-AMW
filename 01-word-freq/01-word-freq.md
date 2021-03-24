@@ -15,7 +15,7 @@ output:
     toc_float: yes
     keep_md: true
     
-bibliography: RDL.bib    
+bibliography: CTA.bib    
 ---
 
 
@@ -38,13 +38,13 @@ In this tutorial, you will learn how to summarise, aggregate, and analyze text i
 
 To practice these skills, we will use a dataset that has already been collected from the Edinburgh Fringe Festival website. You can try this out yourself too: to obtain these data, you must first obtain an API key. Instructions on how to do this are available at the [Edinburgh Fringe API page](https://api.edinburghfestivalcity.com/documentation/fringe_approval):
 
-<iframe src="https://api.edinburghfestivalcity.com/documentation/fringe_approval" width="100%" height="400px"></iframe>
+<iframe src="https://api.edinburghfestivalcity.com/documentation/fringe_approval" width="100%" height="400px" style="border: none;"></iframe>
 
 This might sound complicated but it isn't really. In essence, APIs simply provide data in a more usable format without the need for alternative techniques such as web scraping. Be warned, too, that some websites do not permit automated web scraping, meaning the use of an API is essential.
 
 ##  Load data and packages 
 
-Beforce proceeding, we'll load the remaining packages we will need for this tutorial.
+Before proceeding, we'll load the remaining packages we will need for this tutorial.
 
 
 ```r
