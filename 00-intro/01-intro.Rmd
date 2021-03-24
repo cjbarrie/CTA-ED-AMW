@@ -3,7 +3,7 @@ title: "Computational Text Analysis"
 subtitle: "Research Training Centre Micro-Methods Workshop"
 author:
   name: Christopher Barrie
-  affiliation: University of Edinburgh | [RDL](https://github.com/cjbarrie/RDL-Ed)
+  affiliation: University of Edinburgh | [CTA](https://github.com/cjbarrie/CTA-Ed)
 # date: Lecture 6  #"`r format(Sys.time(), '%d %B %Y')`"
 output: 
   html_document:
