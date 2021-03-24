@@ -38,7 +38,7 @@ In this tutorial, you will learn how to summarise, aggregate, and analyze text i
 
 To practice these skills, we will use a dataset that has already been collected from the Edinburgh Fringe Festival website. You can try this out yourself too: to obtain these data, you must first obtain an API key. Instructions on how to do this are available at the [Edinburgh Fringe API page](https://api.edinburghfestivalcity.com/documentation/fringe_approval):
 
-<iframe src="https://api.edinburghfestivalcity.com/documentation/fringe_approval" width="100%" height="400px" style="border: none;"></iframe>
+![Alt Text](data/fringeapi.png)
 
 This might sound complicated but it isn't really. In essence, APIs simply provide data in a more usable format without the need for alternative techniques such as web scraping. Be warned, too, that some websites do not permit automated web scraping, meaning the use of an API is essential.
 
@@ -181,7 +181,7 @@ ggplot(evtsperyr) +
   scale_y_continuous(expand = c(0, 0), limits = c(0, NA))
 ```
 
-![](01-word-freq_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+![](01-word-freq_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
 
 Perhaps unsurprisingly, in the context of the pandemic, the number of recorded bookings for the 2020 Festival is drastically reduced. 
 
@@ -411,7 +411,7 @@ ggplot(edbf_counts, aes(year, sum_wom / year_total, group=1)) +
   theme_tufte(base_family = "Helvetica") 
 ```
 
-![](01-word-freq_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
+![](01-word-freq_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
 
 In the above, we are looking at the proportions of gender-related words over time as a proportion of total words in each year. @nelson_computational_2020 recommends looking into differences in proportions between years or between documents. This is also straightforward to compute. We can understand each year as an individual "document" containing a "bag of words." To compute the differences in proportions year on year, we need calculate the difference by subtracting the proportion of year y from year y+1. 
 
@@ -431,7 +431,7 @@ ggplot(edbf_diffs, aes(year, diffprop, group=1)) +
   theme_tufte(base_family = "Helvetica")
 ```
 
-![](01-word-freq_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
+![](01-word-freq_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
 
 What do we see from this graph? Arguably this is harder to intepret, even if it does better visualize the year-on-year changes. Because we are looking at year-on-year changes, though, it means the overall trend is harder to determine. We will return to the approach we used in the second-to-last graph; that is, plotting the overall proportion of gender-related words for each year. 
 
@@ -449,7 +449,7 @@ ggplot(edbf_counts, aes(year, sum_wom / year_total, group=1)) +
   theme_tufte(base_family = "Helvetica")
 ```
 
-![](01-word-freq_files/figure-html/unnamed-chunk-24-1.png)<!-- -->
+![](01-word-freq_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
 
 And we could label why we are highlighting the year of 2017 by including a text label along the vertical line. 
 
@@ -467,7 +467,7 @@ ggplot(edbf_counts, aes(year, sum_wom / year_total, group=1)) +
   theme_tufte(base_family = "Helvetica")
 ```
 
-![](01-word-freq_files/figure-html/unnamed-chunk-25-1.png)<!-- -->
+![](01-word-freq_files/figure-html/unnamed-chunk-24-1.png)<!-- -->
 
 ## Gender prediction
 
@@ -603,7 +603,7 @@ ggplot(ednameprops, aes(x=year, fill = factor(sex))) +
   geom_abline(slope=0, intercept=0.5,  col = "black",lty=2)
 ```
 
-![](01-word-freq_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
+![](01-word-freq_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
 
 What can we conclude form this graph?
 
