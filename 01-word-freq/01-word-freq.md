@@ -4,7 +4,7 @@ subtitle: "Research Training Centre Micro-Methods Workshop"
 author:
   name: Christopher Barrie
   affiliation: University of Edinburgh | [CTA](https://github.com/cjbarrie/CTA-Ed)
-# date: Lecture 6  #"24 March 2021"
+# date: Lecture 6  #"26 March 2021"
 output: 
   html_document:
     theme: flatly
@@ -20,6 +20,8 @@ bibliography: CTA.bib
 
 
 # Exercise 1: Word frequency analysis
+
+Testing @R-tidyr
 
 The hands-on exercise for this week uses a different source of data, and here I introduce you to how we might gather, clean, and analyze text data. In so doing, I also refer to the article by @nelson_computational_2020, and the steps she proposes for a "grounded" approach to the analysis of text data. The argument @nelson_computational_2020 makes is that we can use computational techniques for the discovery of topics within text, and then employ more interpretative techniques to analyze meaning in the text itself. Here, we will be mainly focusing on what @nelson_computational_2020 refers to as "lexical-based techniques," though we will also have the chance to perform a simple classification task. 
 
