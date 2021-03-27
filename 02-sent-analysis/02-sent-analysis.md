@@ -23,11 +23,11 @@ bibliography: CTA.bib
 
 ## Introduction
 
-In this tutorial, you will learn how to summarize, aggregate, and analyze text in R:
+In this tutorial, you will learn how to:
 
-* How to use dictionary-based techniques to analyze text
-* How to use common sentiment dictionaries
-* How to build domain-specific dictionaries
+* Use dictionary-based techniques to analyze text
+* Use common sentiment dictionaries
+* Apply more advanced sentiment analysis techniques, e.g., accounting for "valence shifters."
 
 ## Setup 
 
@@ -151,7 +151,7 @@ tidy_pamph %>%
 
 ## Get sentiment dictionaries
 
-Several sentiment dictionaries come bundled with the <tt>tidytext</tt> packaged. These are:
+Several sentiment dictionaries come bundled with the <tt>tidytext</tt> package. These are:
 
 * `AFINN` from [Finn Årup Nielsen](http://www2.imm.dtu.dk/pubdb/views/publication_details.php?id=6010),
 * `bing` from [Bing Liu and collaborators](https://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html), and
@@ -263,6 +263,8 @@ tidy_pamph %>%
 
 We have a total of 336 words with some joy valence in our pamphlet data according to the `nrc` classification. Several seem reasonable (e.g., "freedom," "victory"); others seems less so (e.g., "god," "ministry").
 
+## Sentiment trends over time
+
 Do we see any time trends? First let's make sure the data are properly arranged in ascending order by date. We'll then add column, which we'll call "order," the use of which will become clear when we do the sentiment analysis.
 
 
@@ -279,7 +281,7 @@ Remember that the structure of our pamphlet data is in a one token (word) per do
 
 ```r
 #get tweet sentiment by date
-pamph_sentiment <- tidy_pamph %>%
+pamph_nrc_sentiment <- tidy_pamph %>%
   inner_join(get_sentiments("nrc")) %>%
   count(date, index = order %/% 1000, sentiment) %>%
   spread(sentiment, n, fill = 0) %>%
@@ -291,8 +293,8 @@ pamph_sentiment <- tidy_pamph %>%
 ```
 
 ```r
-pamph_sentiment %>%
-  ggplot(aes(date, joy)) +
+pamph_nrc_sentiment %>%
+  ggplot(aes(date, sentiment)) +
   geom_point(alpha=0.5) +
   geom_smooth(method= loess, alpha=0.25)
 ```
@@ -303,37 +305,23 @@ pamph_sentiment %>%
 
 ![](02-sent-analysis_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
 
-
-
+How do our different sentiment dictionaries look when compared to each other? We can then plot the sentiment scores over time for each of our sentiment dictionaries like so:
 
 
 ```r
-pamph_sentiment <- tidy_pamph %>%
+tidy_pamph %>%
   inner_join(get_sentiments("bing")) %>%
-  mutate(bing_sentiment = sentiment) %>%
-  select(-sentiment) %>%
-  inner_join(get_sentiments("nrc")) %>%
-  mutate(nrc_sentiment = sentiment) %>%
-  select(-sentiment) %>%
-  inner_join(get_sentiments("afinn")) %>%
-  mutate(afinn_sentiment = value) %>%
-  select(-value)
-```
-
-```
-## Joining, by = "word"
-## Joining, by = "word"
-## Joining, by = "word"
-```
-
-```r
-pamph_sentiment %>%
-  count(date, index = order %/% 1000, bing_sentiment) %>%
-  spread(bing_sentiment, n, fill = 0) %>%
-  mutate(bing_sentiment = positive - negative) %>%
-  ggplot(aes(date, bing_sentiment)) +
+  count(date, index = order %/% 1000, sentiment) %>%
+  spread(sentiment, n, fill = 0) %>%
+  mutate(sentiment = positive - negative) %>%
+  ggplot(aes(date, sentiment)) +
   geom_point(alpha=0.5) +
-  geom_smooth(method= loess, alpha=0.25)
+  geom_smooth(method= loess, alpha=0.25) +
+  ylab("bing sentiment")
+```
+
+```
+## Joining, by = "word"
 ```
 
 ```
@@ -343,28 +331,37 @@ pamph_sentiment %>%
 ![](02-sent-analysis_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
 
 ```r
-pamph_sentiment %>%
-  count(date, index = order %/% 1000, nrc_sentiment) %>%
-  spread(nrc_sentiment, n, fill = 0) %>%
-  mutate(nrc_sentiment = positive - negative) %>%
-  ggplot(aes(date, nrc_sentiment)) +
+tidy_pamph %>%
+  inner_join(get_sentiments("nrc")) %>%
+  count(date, index = order %/% 1000, sentiment) %>%
+  spread(sentiment, n, fill = 0) %>%
+  mutate(sentiment = positive - negative) %>%
+  ggplot(aes(date, sentiment)) +
   geom_point(alpha=0.5) +
-  geom_smooth(method= loess, alpha=0.25)
+  geom_smooth(method= loess, alpha=0.25) +
+  ylab("nrc sentiment")
 ```
 
 ```
+## Joining, by = "word"
 ## `geom_smooth()` using formula 'y ~ x'
 ```
 
 ![](02-sent-analysis_files/figure-html/unnamed-chunk-14-2.png)<!-- -->
 
 ```r
-pamph_sentiment %>%
+tidy_pamph %>%
+  inner_join(get_sentiments("afinn")) %>%
   group_by(date, index = order %/% 1000) %>% 
-  summarise(afinn_net = sum(afinn_sentiment)) %>% 
-  ggplot(aes(date, afinn_net)) +
+  summarise(sentiment = sum(value)) %>% 
+  ggplot(aes(date, sentiment)) +
   geom_point(alpha=0.5) +
-  geom_smooth(method= loess, alpha=0.25)
+  geom_smooth(method= loess, alpha=0.25) +
+  ylab("afinn sentiment")
+```
+
+```
+## Joining, by = "word"
 ```
 
 ```
@@ -376,5 +373,69 @@ pamph_sentiment %>%
 ```
 
 ![](02-sent-analysis_files/figure-html/unnamed-chunk-14-3.png)<!-- -->
+
+We see that they do look pretty similar... but they're not particularly informative beyond telling us there's no obvious time trend. We might therefore choose to focus our attention on one particular sentiment. As noted above, we might hypothesize that there was a greater frequency of joy sentiment earlier on in the uprising. We can check this by simply changing the sentiment variable we're analyzing in the `nrc` dictionary:
+
+
+```r
+tidy_pamph %>%
+  inner_join(get_sentiments("nrc")) %>%
+  count(date, index = order %/% 1000, sentiment) %>%
+  spread(sentiment, n, fill = 0) %>%
+  ggplot(aes(date, joy)) +
+  geom_point(alpha=0.5) +
+  geom_smooth(method= loess, alpha=0.25)
+```
+
+```
+## Joining, by = "word"
+```
+
+```
+## `geom_smooth()` using formula 'y ~ x'
+```
+
+![](02-sent-analysis_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+
+We do some small evidence that there was a higher frequency of joy words earlier on in the uprising. Further analyses, however, might build a more domain-specific dictionary. For example, if we were interested in the frequency of democracy demands over time, we might build a specific lexicon for this, coding democracy-related words as 1 and everything else as 0.
+
+## Sentiment of sentences
+
+Note that to this point we have been conducting sentiment analyses on unigrams; i.e., single words. Clearly this is prone to error. An obvious example of where such error could creep in is with negation. For example, in the sentence, "I am not happy" the word "happy" would be scored for positive emotion as the scoring method is blind to the negation. Negation is a type of "valence shifting." This means that the valence of a word might change depending on its broader context in a sequence of words. 
+
+There are ways of dealing with this, however. In the next section we will look into how we might go about taking account of valence shifters. For this, we will be using   <tt>sentimentr</tt> package by @R-sentimentr. This is a development package so can't be installed in the normal way. Instead, run the following code to install it:
+
+
+```r
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load_current_gh("trinker/lexicon", "trinker/sentimentr")
+
+library(sentimentr)
+```
+
+
+
+```
+## `geom_smooth()` using formula 'y ~ x'
+```
+
+![](02-sent-analysis_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
+
+With the <tt>sentimentr</tt> package we can check how this dictionary-based method is scoring words byu outputting random sections of text and highlighting them red or green based on the sentiment score attached to the sentence in question. This is easy to achieve with some in-built functions that come with the package: 
+
+
+
+```r
+set.seed(123)
+pamphdata %>%
+    filter(imgID %in% sample(unique(imgID), 3)) %>%
+    mutate(pamphsentences = get_sentences(text)) %$%
+    sentiment_by(pamphsentences, imgID) %>%
+    highlight()
+```
+
+![](images/senthighlight.png)
+What do we make of how this text has been scored? There does seem to be some logic to the sections coded as positive versus negative. But more than anything, this shows us that there is clear error in how texts are scored, even when valence shifting is taken into account. 
+
 
 ## References 
