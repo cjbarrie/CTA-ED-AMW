@@ -175,7 +175,7 @@ tidy_des %>%
   count(word, sort = TRUE)
 ```
 
-That's more like it! The words that feature most seem to make sense now (and are actual words rather than random HTML and PHP UTF-8 encodings). 
+That's more like it! The words that feature most seem to make sense now (and are actual words rather than random HTML and UTF-8 encodings). 
 
 Let's now collect these words into a data.frame object, which we'll call edbf_term_counts:
 
