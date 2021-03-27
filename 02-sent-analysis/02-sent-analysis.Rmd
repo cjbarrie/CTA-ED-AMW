@@ -137,6 +137,10 @@ tidy_pamph %>%
 ```
 
 
+We have a total of 336 words with some joy valence in our pamphlet data according to the `nrc` classification. Several seem reasonable (e.g., "freedom," "victory"); others seems less so (e.g., "god," "ministry").
+
+Do we see any time trends? First let's make sure the data are properly arranged in ascending order by date. We'll then add column, which we'll call "order," the use of which will become clear when we do the sentiment analysis.
+
 ```{r}
 #order and format date
 tidy_pamph<- tidy_pamph %>%
@@ -144,6 +148,12 @@ tidy_pamph<- tidy_pamph %>%
 
 tidy_pamph$order <- 1:nrow(tidy_pamph)
 
+
+```
+
+Remember that the structure of our pamphlet data is in a one token (word) per document (pamphlet) format. In order to look at sentiment trends over time, we'll need to decide over how many words to estimate the sentiment. In the below, we first add in our sentiment diction with `inner_join()`. We then use the `count()` function, specifying that we want to count over dates, and that words should be indexed in order (i.e., by row number) over every 1000 rows (i.e., every 1000 words). This means that if one date has many documents totalling >1000 words, then we will have multiple observations for that given date; if there are only one or two documents then we might have just one row and associated sentiment score for that date. We then calculate the sentiment scores for each of our sentiment types (positive, negative, anger, anticipation, disgust, fear, joy, sadness, surprise, and trust) and use the `spread()` function to convert these into separate columns (rather than rows). Finally we calculate a net sentiment score by subtracting the score for negative sentiment from positive sentiment. 
+
+```{r}
 #get tweet sentiment by date
 pamph_sentiment <- tidy_pamph %>%
   inner_join(get_sentiments("nrc")) %>%
@@ -158,6 +168,47 @@ pamph_sentiment %>%
 
 ```
 
-We have a total of 336 words with some joy valence in our pamphlet data according to the `nrc` classification. Several seem reasonable (e.g., "freedom," "victory"); others seems less so (e.g., "god," "ministry"). 
+
+
+
+```{r}
+
+pamph_sentiment <- tidy_pamph %>%
+  inner_join(get_sentiments("bing")) %>%
+  mutate(bing_sentiment = sentiment) %>%
+  select(-sentiment) %>%
+  inner_join(get_sentiments("nrc")) %>%
+  mutate(nrc_sentiment = sentiment) %>%
+  select(-sentiment) %>%
+  inner_join(get_sentiments("afinn")) %>%
+  mutate(afinn_sentiment = value) %>%
+  select(-value)
+
+
+pamph_sentiment %>%
+  count(date, index = order %/% 1000, bing_sentiment) %>%
+  spread(bing_sentiment, n, fill = 0) %>%
+  mutate(bing_sentiment = positive - negative) %>%
+  ggplot(aes(date, bing_sentiment)) +
+  geom_point(alpha=0.5) +
+  geom_smooth(method= loess, alpha=0.25)
+
+pamph_sentiment %>%
+  count(date, index = order %/% 1000, nrc_sentiment) %>%
+  spread(nrc_sentiment, n, fill = 0) %>%
+  mutate(nrc_sentiment = positive - negative) %>%
+  ggplot(aes(date, nrc_sentiment)) +
+  geom_point(alpha=0.5) +
+  geom_smooth(method= loess, alpha=0.25)
+
+pamph_sentiment %>%
+  group_by(date, index = order %/% 1000) %>% 
+  summarise(afinn_net = sum(afinn_sentiment)) %>% 
+  ggplot(aes(date, afinn_net)) +
+  geom_point(alpha=0.5) +
+  geom_smooth(method= loess, alpha=0.25)
+
+
+```
 
 ## References 
