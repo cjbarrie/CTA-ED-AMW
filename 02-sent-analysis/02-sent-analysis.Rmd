@@ -1,0 +1,81 @@
+---
+title: "Computational Text Analysis: Sentiment Analysis"
+subtitle: "Research Training Centre Micro-Methods Workshop"
+author:
+  name: Christopher Barrie
+  affiliation: University of Edinburgh | [CTA](https://github.com/cjbarrie/CTA-Ed)
+# date: Lecture 6  #"`r format(Sys.time(), '%d %B %Y')`"
+output: 
+  html_document:
+    theme: flatly
+    highlight: haddock
+    # code_folding: show
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+    keep_md: true
+    
+bibliography: CTA.bib    
+---
+
+
+# Exercise 2: Sentiment analysis
+
+## Introduction
+
+In this tutorial, you will learn how to summarize, aggregate, and analyze text in R:
+
+* How to use dictionary-based techniques to analyze text
+* How to use common sentiment dictionaries
+* How to build domain-specific dictionaries
+
+## Setup 
+
+The hands-on exercise for this week uses dictionary-based methods for filtering and scoring words. Dictionary-based methods use pre-generated lexicons, which are no more than list of words with associated scores or variables measuring the valence of a particular word. In this sense, the exercise is not unlike our analysis of Edinburgh Book Festival event descriptions. Here, we were filtering descriptions based on the presence or absence of a word related to women or gender. We can understand this approach as a particularly simple type of "dictionary-based" method. Here, our "dictionary" or "lexicon" contained just a few words related to gender. 
+
+In this exercise we'll be using another new dataset. The data were sourced from a series of webpages on the Internet Archive that host material collected at the Arab Spring protests in Egypt in 2011. The original website can be seen [here](https://www.tahrirdocuments.org/) and below.
+
+![](images/tahrir_page.png){width=100%}
+
+For full details of the technique used to scrape these webpages, see [here](https://raw.githack.com/cjbarrie/RDL-Ed/main/03-screenscrape-apis/03-week7.html).
+
+##  Load data and packages 
+
+Before proceeding, we'll load the remaining packages we will need for this tutorial.
+
+```{r, message=F}
+library(tidyverse) # loads dplyr, ggplot2, and others
+library(ggthemes) # includes a set of themes to make your visualizations look nice!
+library(readr) # more informative and easy way to import data
+library(stringr) # to handle text elements
+library(tidytext) # includes set of functions useful for manipulating text
+
+```
+
+We can download the final dataset with:
+
+```{r}
+pamphdata <- read_csv("data/pamphlets_formatted_gsheets.csv")
+```
+
+You can also view the formatted output of this scraping exercise, alongside images of the documents in question, in Google Sheets [here](https://docs.google.com/spreadsheets/d/1rg2VTV6uuknpu6u-L5n7kvQ2cQ6e6Js7IHp7CaSKe90/edit?usp=sharing).
+
+If you're working on this document from your own computer ("locally") you can download the Tahrir documents data in the following way:
+
+```{r, eval = F}
+pamphdata <- read_csv("https://raw.githubusercontent.com/cjbarrie/RDL-Ed/main/03-screenscrape-apis/data/pamphlets_formatted_gsheets.csv")
+```
+
+## Inspect and filter data 
+
+Let's have a look at the data:
+
+```{r}
+head(pamphdata)
+```
+
+Each document here is a pamphlet produced during the Arab Spring protests in Egypt in 2011. They have all been translated into English. The contents of each pamphlet are stored under the column entitled "text." This is the text with which we will be performing our analyses. Note also that each document has a particular date. We can therefore use these to look at any over time changes.
+
+
+
+## References 
