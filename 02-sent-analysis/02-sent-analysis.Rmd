@@ -45,7 +45,6 @@ Before proceeding, we'll load the remaining packages we will need for this tutor
 
 ```{r, message=F}
 library(tidyverse) # loads dplyr, ggplot2, and others
-library(ggthemes) # includes a set of themes to make your visualizations look nice!
 library(readr) # more informative and easy way to import data
 library(stringr) # to handle text elements
 library(tidytext) # includes set of functions useful for manipulating text

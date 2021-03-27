@@ -24,7 +24,8 @@ Word frequencies
 ========================================================
 author: Christopher Barrie 
 date: University of Edinburgh
-autosize: true
+width: 1440
+height: 900
 transition: none  
   website: https://cjbarrie.xyz     
   github: https://github.com/cjbarrie       

@@ -1,0 +1,184 @@
+
+<style>
+.reveal section p {
+  color: black;
+  font-size: .7em;
+  font-family: 'Helvetica'; #this is the font/color of text in slides
+}
+
+
+.section .reveal .state-background {
+    background: white;}
+.section .reveal h1,
+.section .reveal p {
+    color: black;
+    position: relative;
+    top: 4%;}
+
+
+
+</style>
+
+
+Sentiment Analysis
+========================================================
+author: Christopher Barrie 
+date: University of Edinburgh
+width: 1440
+height: 900
+transition: none  
+  website: https://cjbarrie.xyz     
+  github: https://github.com/cjbarrie       
+  Twitter: https://www.twitter.com/cbarrie
+
+Word frequency analysis
+========================================================
+
+
+Running Your First Analysis: Tahrir Documents
+========================================================
+
+```{r, echo=F}
+library('knitr')
+```
+```{r set-options, echo=FALSE, cache=FALSE}
+options(width = 500)
+```
+
+```{r, eval=TRUE}
+library(tidyverse) # loads dplyr, ggplot2, and others
+library(readr) # more informative and easy way to import data
+library(stringr) # to handle text elements
+library(tidytext) # includes set of functions useful for manipulating text
+
+pamphdata <- read_csv("https://raw.githubusercontent.com/cjbarrie/RDL-Ed/main/03-screenscrape-apis/data/pamphlets_formatted_gsheets.csv")
+
+```
+
+Sentiment dictionaries
+========================================================
+* `AFINN` from [Finn Årup Nielsen](http://www2.imm.dtu.dk/pubdb/views/publication_details.php?id=6010),
+* `bing` from [Bing Liu and collaborators](https://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html), and
+* `nrc` from [Saif Mohammad and Peter Turney](http://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm)
+
+Getting sentiment dictionaries
+========================================================
+```{r}
+get_sentiments("afinn")
+```
+
+Getting sentiment dictionaries
+========================================================
+```{r}
+get_sentiments("nrc")
+```
+
+Getting sentiment dictionaries
+========================================================
+```{r}
+get_sentiments("bing")
+```
+
+
+Preprocess Tahrir documents
+========================================================
+
+```{r}
+
+tidy_pamph <- pamphdata %>% 
+  mutate(desc = tolower(text)) %>%
+  unnest_tokens(word, desc) %>%
+  filter(str_detect(word, "[a-z]"))
+
+tidy_pamph <- tidy_pamph %>%
+    filter(!word %in% stop_words$word)
+```
+
+Inspect
+========================================================
+
+```{r, message=FALSE, warning=FALSE, eval=TRUE}
+tidy_pamph %>%
+  count(word, sort = TRUE)
+```
+
+Order by data and index
+========================================================
+
+```{r}
+#order and format date
+tidy_pamph<- tidy_pamph %>%
+  arrange(date)
+
+tidy_pamph$order <- 1:nrow(tidy_pamph)
+
+```
+
+Order by data and index
+========================================================
+
+```{r}
+#order and format date
+tidy_pamph<- tidy_pamph %>%
+  arrange(date)
+
+tidy_pamph$order <- 1:nrow(tidy_pamph)
+
+```
+
+Get sentiments in tidy format
+========================================================
+
+```{r}
+#join pamphlets with nrc sentiment data
+pamph_nrc_sentiment <- tidy_pamph %>%
+  inner_join(get_sentiments("nrc"))
+
+```
+
+Get sentiments in tidy format
+========================================================
+
+```{r}
+#calculate sentiment over per 1000 words per date
+pamph_nrc_sentiment <- pamph_nrc_sentiment %>%
+  count(date, index = order %/% 1000, sentiment)
+
+head(pamph_nrc_sentiment)
+
+```
+
+Get sentiments in tidy format
+========================================================
+
+```{r}
+#separate into 
+pamph_nrc_sentiment <- pamph_nrc_sentiment %>%
+  spread(sentiment, n, fill = 0)
+
+head(pamph_nrc_sentiment)
+
+```
+
+Get sentiments in tidy format
+========================================================
+
+```{r}
+#separate into 
+pamph_nrc_sentiment <- pamph_nrc_sentiment %>%
+  mutate(sentiment = positive - negative)
+
+head(pamph_nrc_sentiment)
+```
+
+Plot
+========================================================
+
+
+```{r}
+pamph_nrc_sentiment %>%
+  ggplot(aes(date, sentiment)) +
+  geom_point(alpha=0.5) +
+  geom_smooth(method= loess, alpha=0.25)
+
+```
