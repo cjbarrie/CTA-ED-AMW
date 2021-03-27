@@ -127,12 +127,19 @@ The below set of commands takes the event descriptions, extracts individual word
 #get year and word for every word and date pair in the dataset
 tidy_des <- evdes %>% 
   mutate(desc = tolower(description)) %>%
-  unnest_tokens(word, description) %>%
+  unnest_tokens(word, desc) %>%
   filter(str_detect(word, "[a-z]"))
 
 ```
 
-We see that the resulting dataset is large (~445k rows). This is because the above commands have first taken the event descriptions, and has "mutated" it into a set of lower case character string. With the "unnest_tokens" function it has then taken each individual string and create a new column called "word" that contains each individual word contained in the event descriptions. 
+We see that the resulting dataset is large (~293k rows). This is because the above commands have first taken the pamphlet text, and has "mutated" it into a set of lower case character string. With the "unnest_tokens" function it has then taken each individual string and create a new column called "word" that contains each individual word contained in the pamphlet texts.
+
+We can yet tidy this further, though. First we'll remove all stop words:
+
+```{r}
+tidy_des <- tidy_des %>%
+    filter(!word %in% stop_words$word)
+```
 
 Some terminology is also appropriate here. When we tidy our text into this format, we often refer to these data structures as consisting of "documents" and "terms." This is because by "tokenizing" our text with the "unnest_tokens" functions we are generating a dataset with one term per row. Here, our "documents" are the collection of descriptions for all events in each year at the Edinburgh Book Festival. The way in which we sort our text into "documents" depends on the choice of the individual researcher. Instead of by year, we might have wanted to sort our text into "genre." Here, we have two genres: "Literature" and "Children." Had we done so, we would then have only two "documents," which contained all of the words included in the event descriptions for each genre. Alternatively, we might be interested in the contributions of individual authors over time. Were this the case, we could have sorted our text into documents by author. In this case, each "document" would represent all the words included in event descriptions for events by the given author (many of whom do have multiple appearances over time or in the same festival for a given year).
  

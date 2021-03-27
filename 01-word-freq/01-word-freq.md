@@ -4,7 +4,7 @@ subtitle: "Research Training Centre Micro-Methods Workshop"
 author:
   name: Christopher Barrie
   affiliation: University of Edinburgh | [CTA](https://github.com/cjbarrie/CTA-Ed)
-# date: Lecture 6  #"26 March 2021"
+# date: Lecture 6  #"27 March 2021"
 output: 
   html_document:
     theme: flatly
@@ -20,8 +20,6 @@ bibliography: CTA.bib
 
 
 # Exercise 1: Word frequency analysis
-
-Testing @R-tidyr
 
 The hands-on exercise for this week uses a different source of data, and here I introduce you to how we might gather, clean, and analyze text data. In so doing, I also refer to the article by @nelson_computational_2020, and the steps she proposes for a "grounded" approach to the analysis of text data. The argument @nelson_computational_2020 makes is that we can use computational techniques for the discovery of topics within text, and then employ more interpretative techniques to analyze meaning in the text itself. Here, we will be mainly focusing on what @nelson_computational_2020 refers to as "lexical-based techniques," though we will also have the chance to perform a simple classification task. 
 
@@ -198,11 +196,19 @@ The below set of commands takes the event descriptions, extracts individual word
 #get year and word for every word and date pair in the dataset
 tidy_des <- evdes %>% 
   mutate(desc = tolower(description)) %>%
-  unnest_tokens(word, description) %>%
+  unnest_tokens(word, desc) %>%
   filter(str_detect(word, "[a-z]"))
 ```
 
-We see that the resulting dataset is large (~445k rows). This is because the above commands have first taken the event descriptions, and has "mutated" it into a set of lower case character string. With the "unnest_tokens" function it has then taken each individual string and create a new column called "word" that contains each individual word contained in the event descriptions. 
+We see that the resulting dataset is large (~293k rows). This is because the above commands have first taken the pamphlet text, and has "mutated" it into a set of lower case character string. With the "unnest_tokens" function it has then taken each individual string and create a new column called "word" that contains each individual word contained in the pamphlet texts.
+
+We can yet tidy this further, though. First we'll remove all stop words:
+
+
+```r
+tidy_des <- tidy_des %>%
+    filter(!word %in% stop_words$word)
+```
 
 Some terminology is also appropriate here. When we tidy our text into this format, we often refer to these data structures as consisting of "documents" and "terms." This is because by "tokenizing" our text with the "unnest_tokens" functions we are generating a dataset with one term per row. Here, our "documents" are the collection of descriptions for all events in each year at the Edinburgh Book Festival. The way in which we sort our text into "documents" depends on the choice of the individual researcher. Instead of by year, we might have wanted to sort our text into "genre." Here, we have two genres: "Literature" and "Children." Had we done so, we would then have only two "documents," which contained all of the words included in the event descriptions for each genre. Alternatively, we might be interested in the contributions of individual authors over time. Were this the case, we could have sorted our text into documents by author. In this case, each "document" would represent all the words included in event descriptions for events by the given author (many of whom do have multiple appearances over time or in the same festival for a given year).
  
@@ -300,7 +306,7 @@ tidy_des %>%
 ## # … with 24,979 more rows
 ```
 
-That's more like it! The words that feature most seem to make sense now (and are actual words rather than random HTML and PHP UTF-8 encodings). 
+That's more like it! The words that feature most seem to make sense now (and are actual words rather than random HTML and UTF-8 encodings). 
 
 Let's now collect these words into a data.frame object, which we'll call edbf_term_counts:
 
@@ -413,7 +419,7 @@ ggplot(edbf_counts, aes(year, sum_wom / year_total, group=1)) +
   theme_tufte(base_family = "Helvetica") 
 ```
 
-![](01-word-freq_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
+![](01-word-freq_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
 
 In the above, we are looking at the proportions of gender-related words over time as a proportion of total words in each year. @nelson_computational_2020 recommends looking into differences in proportions between years or between documents. This is also straightforward to compute. We can understand each year as an individual "document" containing a "bag of words." To compute the differences in proportions year on year, we need calculate the difference by subtracting the proportion of year y from year y+1. 
 
@@ -433,7 +439,7 @@ ggplot(edbf_diffs, aes(year, diffprop, group=1)) +
   theme_tufte(base_family = "Helvetica")
 ```
 
-![](01-word-freq_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
+![](01-word-freq_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
 
 What do we see from this graph? Arguably this is harder to intepret, even if it does better visualize the year-on-year changes. Because we are looking at year-on-year changes, though, it means the overall trend is harder to determine. We will return to the approach we used in the second-to-last graph; that is, plotting the overall proportion of gender-related words for each year. 
 
@@ -451,7 +457,7 @@ ggplot(edbf_counts, aes(year, sum_wom / year_total, group=1)) +
   theme_tufte(base_family = "Helvetica")
 ```
 
-![](01-word-freq_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
+![](01-word-freq_files/figure-html/unnamed-chunk-24-1.png)<!-- -->
 
 And we could label why we are highlighting the year of 2017 by including a text label along the vertical line. 
 
@@ -469,7 +475,7 @@ ggplot(edbf_counts, aes(year, sum_wom / year_total, group=1)) +
   theme_tufte(base_family = "Helvetica")
 ```
 
-![](01-word-freq_files/figure-html/unnamed-chunk-24-1.png)<!-- -->
+![](01-word-freq_files/figure-html/unnamed-chunk-25-1.png)<!-- -->
 
 ## Gender prediction
 
@@ -605,7 +611,7 @@ ggplot(ednameprops, aes(x=year, fill = factor(sex))) +
   geom_abline(slope=0, intercept=0.5,  col = "black",lty=2)
 ```
 
-![](01-word-freq_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
+![](01-word-freq_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
 
 What can we conclude form this graph?
 
