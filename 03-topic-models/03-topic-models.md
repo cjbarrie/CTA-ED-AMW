@@ -235,7 +235,7 @@ ggplot(bookfreq, aes(x = DiA1, y = DiA2, color = abs(DiA1 - DiA2))) +
 
 We see that there do seem to be some marked distinguishing characteristics. In the plot above, for example, we see that more abstract notions of state systems appear with greater frequency in Volume 1 while Volume 2 seems to contain words specific to America (e.g., "north" and "south") with greater frequency. The way to read the above plot is that words positioned further away from the diagonal line appear with greater frequency in one volume versus the other.
 
-To evaluate whether a topic model is able to generatively assign to volume with accuracy, we first need to re-estimate the topic model with our k of topics equal to 2. 
+In the below, we first separate the volumes into chapters, then we repeat the same procedure as above. The only difference now is that instead of two documents representing the two full volumes of Tocqueville's work, we now have 132 documents, each representing an individual chapter. Notice now that the sparsity is much increased: around 96%. 
 
 
 ```r
@@ -326,18 +326,19 @@ tm::inspect(tocq_chapters_dtm)
 ##   DiA2_76     88
 ```
 
-In the above, we have first separated the volumes into chapters, then we have repeated the same procedure above. The only difference now is that instead of two documents representing the two full volumes of Tocqueville's work, we now have 132 documents, each representing an individual chapter. Notice now that the sparsity is much increased: around 96%. 
-
-We then re-estimate the topic model with this new DocumentTermMatrix
+We then re-estimate the topic model with this new DocumentTermMatrix object, specifying k equal to 2. This will enable us to evaluate whether a topic model is able to generatively assign to volume with accuracy.
 
 
 ```r
-# Look for 2 topics across all chapters 
-# (one would assume these correspond to vols. 1 and 2)
 tocq_chapters_lda <- LDA(tocq_chapters_dtm, k = 2, control = list(seed = 1234))
+```
 
-# Look at per-document-per-topic probabilities ("gamma")
+After this, it is worth looking at another output of the latent dirichlet allocation procedure. The γ probability represents the per-document-per-topic probability or, in other words, the probability that a given document (here: chapter) belongs to a particular topic (and here, we are assuming these topics represent volumes).
 
+The gamma values are therefore the estimated proportion of words within a given chapter allocated to a given volume. 
+
+
+```r
 tocq_chapters_gamma <- tidy(tocq_chapters_lda, matrix = "gamma")
 tocq_chapters_gamma
 ```
@@ -359,14 +360,10 @@ tocq_chapters_gamma
 ## # … with 254 more rows
 ```
 
+Now that we have these topic probabilities, we can see how well our unsupervised learning did at distinguishing the two volumes generatively just from the words contained in each chapter.
+
+
 ```r
-# Each of these values is an estimated proportion of words from that document
-# that are generated from that topic. For example, the model estimates that each word
-# in the DiA1_28 document has a 0.249% probability of coming from topic 1
-
-# Now that we have these topic probabilities, we can see how well our unsupervised 
-# learning did at distinguishing the two 
-
 # First separate the document name into title and chapter
 
 tocq_chapters_gamma <- tocq_chapters_gamma %>%
@@ -377,16 +374,6 @@ tocq_chapter_classifications <- tocq_chapters_gamma %>%
   top_n(1, gamma) %>%
   ungroup()
 
-tocq_chapters_gamma %>%
-  mutate(title = reorder(title, gamma * topic)) %>%
-  ggplot(aes(factor(topic), gamma)) +
-  geom_boxplot() +
-  facet_wrap(~ title) + theme_tufte(base_family = "Helvetica")
-```
-
-![](03-topic-models_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
-
-```r
 tocq_book_topics <- tocq_chapter_classifications %>%
   count(title, topic) %>%
   group_by(title) %>%
@@ -466,7 +453,7 @@ assignments %>%
        fill = "% of assignments")
 ```
 
-![](03-topic-models_files/figure-html/unnamed-chunk-10-2.png)<!-- -->
+![](03-topic-models_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
 
 
 ## Exercises
