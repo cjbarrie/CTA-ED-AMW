@@ -92,41 +92,6 @@ tidy_tocq %>%
 ## # … with 12,082 more rows
 ```
 
-```r
-bookfreq <- tidy_tocq %>%
-  mutate(booknumber = ifelse(gutenberg_id==815, "DiA1", "DiA2")) %>%
-  mutate(word = str_extract(word, "[a-z']+")) %>%
-  count(booknumber, word) %>%
-  group_by(booknumber) %>%
-  mutate(proportion = n / sum(n)) %>% 
-  select(-n) %>% 
-  spread(booknumber, proportion)
-
-ggplot(bookfreq, aes(x = DiA1, y = DiA2, color = abs(DiA1 - DiA2))) +
-  geom_abline(color = "gray40", lty = 2) +
-  geom_jitter(alpha = 0.1, size = 2.5, width = 0.3, height = 0.3) +
-  geom_text(aes(label = word), check_overlap = TRUE, vjust = 1.5) +
-  scale_x_log10(labels = percent_format()) +
-  scale_y_log10(labels = percent_format()) +
-  scale_color_gradient(limits = c(0, 0.001), low = "darkslategray4", high = "gray75") +
-  theme_tufte(base_family = "Helvetica") +
-  theme(legend.position="none", 
-        strip.background = element_blank(), 
-        strip.text.x = element_blank()) +
-  labs(x = "Tocqueville DiA 2", y = "Tocqueville DiA 1") +
-  coord_equal()
-```
-
-```
-## Warning: Removed 6173 rows containing missing values (geom_point).
-```
-
-```
-## Warning: Removed 6174 rows containing missing values (geom_text).
-```
-
-![](03-topic-models_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
-
 ## Convert to document-term-matrix
 
 
@@ -169,6 +134,99 @@ tm::inspect(tocq_dtm)
 
 
 ```r
+tocq_lda <- LDA(tocq_dtm, k = 10, control = list(seed = 1234))
+#  Extract the per-topic-per-word probabilities, called "β" from the model.
+tocq_topics <- tidy(tocq_lda, matrix = "beta")
+```
+
+
+```r
+# Notice that this has turned the model into a one-topic-per-term-per-row 
+# format. For each combination, the model computes the probability of that 
+# term being generated from that topic. For example, the term “democratic” has a  
+# 0.00674 probability of being generated from topic 1, but a 0.00606 probability
+# of being generated from topic 2.
+
+tocq_top_terms <- tocq_topics %>%
+  group_by(topic) %>%
+  top_n(10, beta) %>%
+  ungroup() %>%
+  arrange(topic, -beta)
+
+tocq_top_terms %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(beta, term, fill = factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free", ncol = 4) +
+  scale_y_reordered()
+```
+
+![](03-topic-models_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+
+```r
+beta_spread <- tocq_topics %>%
+  mutate(topic = paste0("topic", topic)) %>%
+  spread(topic, beta) %>%
+  filter(topic1 > .001 | topic2 > .001) %>%
+  mutate(log_ratio = log2(topic2 / topic1))
+
+beta_spread %>%
+  group_by(direction = log_ratio > 0) %>%
+  top_n(10, abs(log_ratio)) %>%
+  ungroup() %>%
+  mutate(term = reorder(term, log_ratio)) %>%
+  ggplot(aes(log_ratio, term)) +
+  geom_col() +
+  theme_tufte(base_family = "Helvetica") +
+  labs(x = "Log2 ratio of beta in topic 2 / topic 1", y = NULL)
+```
+
+![](03-topic-models_files/figure-html/unnamed-chunk-7-2.png)<!-- -->
+
+But how do we actually evaluate these topics? Her, the topics all seem pretty similar. One way to evaluate the performance of unspervised forms of classification is by testing our model on an outcome that is already known. Here, two topics that are most obvious are the 'topics' Volume 1 and Volume 2 of Tocqueville's "Democracy in America." Volume 1 of Tocqueville's work deals more obviously with abstract constitutional ideas and questions of race; Volume 2 focuses on more esoteric aspects of American society. Listen an "In Our Time" episode with Melvyn Bragg discussing Democracy in America [here](https://www.bbc.co.uk/programmes/b09vyw0x).
+
+Given these differences in focus, we might think that a generative model could estimate assignment to topic (i.e., Volume) with some accuracy. 
+
+First let's have a look and see whether there really are words obviously distinguishing the two Volumes. 
+
+
+```r
+bookfreq <- tidy_tocq %>%
+  mutate(booknumber = ifelse(gutenberg_id==815, "DiA1", "DiA2")) %>%
+  mutate(word = str_extract(word, "[a-z']+")) %>%
+  count(booknumber, word) %>%
+  group_by(booknumber) %>%
+  mutate(proportion = n / sum(n)) %>% 
+  select(-n) %>% 
+  spread(booknumber, proportion)
+
+ggplot(bookfreq, aes(x = DiA1, y = DiA2, color = abs(DiA1 - DiA2))) +
+  geom_abline(color = "gray40", lty = 2) +
+  geom_jitter(alpha = 0.1, size = 2.5, width = 0.3, height = 0.3) +
+  geom_text(aes(label = word), check_overlap = TRUE, vjust = 1.5) +
+  scale_x_log10(labels = percent_format()) +
+  scale_y_log10(labels = percent_format()) +
+  scale_color_gradient(limits = c(0, 0.001), low = "darkslategray4", high = "gray75") +
+  theme_tufte(base_family = "Helvetica") +
+  theme(legend.position="none", 
+        strip.background = element_blank(), 
+        strip.text.x = element_blank()) +
+  labs(x = "Tocqueville DiA 2", y = "Tocqueville DiA 1") +
+  coord_equal()
+```
+
+```
+## Warning: Removed 6173 rows containing missing values (geom_point).
+```
+
+```
+## Warning: Removed 6174 rows containing missing values (geom_text).
+```
+
+![](03-topic-models_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+
+
+```r
 tocq_lda <- LDA(tocq_dtm, k = 2, control = list(seed = 1234))
 #  Extract the per-topic-per-word probabilities, called "β" from the model.
 tocq_topics <- tidy(tocq_lda, matrix = "beta")
@@ -192,39 +250,7 @@ tocq_topics
 ## # … with 24,174 more rows
 ```
 
-
 ```r
-# Notice that this has turned the model into a one-topic-per-term-per-row 
-# format. For each combination, the model computes the probability of that 
-# term being generated from that topic. For example, the term “democratic” has a  
-# 0.00674 probability of being generated from topic 1, but a 0.00606 probability
-# of being generated from topic 2.
-
-tocq_top_terms <- tocq_topics %>%
-  group_by(topic) %>%
-  top_n(10, beta) %>%
-  ungroup() %>%
-  arrange(topic, -beta)
-
-head(tocq_top_terms)
-```
-
-```
-## # A tibble: 6 x 3
-##   topic term          beta
-##   <int> <chr>        <dbl>
-## 1     1 people     0.0107 
-## 2     1 united     0.00936
-## 3     1 democratic 0.00674
-## 4     1 government 0.00660
-## 5     1 americans  0.00659
-## 6     1 country    0.00640
-```
-
-
-```r
-## Topic modelling example by chapters (to give more individual documents)
-
 # Divide into documents, each representing one chapter
 tocq_chapter <- tocq %>%
   mutate(booknumber = ifelse(gutenberg_id==815, "DiA1", "DiA2")) %>%
@@ -372,6 +398,16 @@ tocq_chapter_classifications <- tocq_chapters_gamma %>%
   top_n(1, gamma) %>%
   ungroup()
 
+tocq_chapters_gamma %>%
+  mutate(title = reorder(title, gamma * topic)) %>%
+  ggplot(aes(factor(topic), gamma)) +
+  geom_boxplot() +
+  facet_wrap(~ title) + theme_tufte(base_family = "Helvetica")
+```
+
+![](03-topic-models_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+
+```r
 tocq_book_topics <- tocq_chapter_classifications %>%
   count(title, topic) %>%
   group_by(title) %>%
@@ -442,6 +478,7 @@ assignments %>%
   ggplot(aes(consensus, title, fill = percent)) +
   geom_tile() +
   scale_fill_gradient2(high = "red", label = percent_format()) +
+  geom_text(aes(x = consensus, y = title, label = scales::percent(percent))) +
   theme_tufte(base_family = "Helvetica") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1),
         panel.grid = element_blank()) +
@@ -450,7 +487,9 @@ assignments %>%
        fill = "% of assignments")
 ```
 
-![](03-topic-models_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+![](03-topic-models_files/figure-html/unnamed-chunk-9-2.png)<!-- -->
+
+
 ## Exercises
 
 1. Choose another book or set of books from Project Gutenberg
