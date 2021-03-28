@@ -50,6 +50,13 @@ bookdata %>%
 
 ```
 
+========================================================
+
+<center>
+![](images/mildigbooksex.png)
+</center>
+
+
 Running Your First Analysis: Edinburgh Book Festival
 ========================================================
 ```{r, eval=TRUE}

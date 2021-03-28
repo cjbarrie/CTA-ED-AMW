@@ -70,6 +70,13 @@ bookdata %>%
 # … with 6,528 more rows
 ```
 
+========================================================
+
+<center>
+![](images/mildigbooksex.png)
+</center>
+
+
 Running Your First Analysis: Edinburgh Book Festival
 ========================================================
 
