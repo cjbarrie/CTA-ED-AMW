@@ -42,10 +42,10 @@ library(tm)
 library(ggthemes) # to make your plots look nice
 ```
 
-We'll be using data from Alexis de Tocqueville's "Democracy in America." We will download these data as a whole and separated into Parts 1 and 2. For this, we'll be using the <tt>gutenbergr</tt> package, which allows the user to download text data from over 60,000 out-of-copyright books. The ID for each book appears in the url for the book selected after a search on [https://www.gutenberg.org/ebooks/](https://www.gutenberg.org/ebooks/).
+We'll be using data from Alexis de Tocqueville's "Democracy in America." We will download these data , both Volume 1 and Volume 2, and combine them into one data frame. For this, we'll be using the <tt>gutenbergr</tt> package, which allows the user to download text data from over 60,000 out-of-copyright books. The ID for each book appears in the url for the book selected after a search on [https://www.gutenberg.org/ebooks/](https://www.gutenberg.org/ebooks/).
 
 ![](images/gutenberg.gif){width=100%}
-Here, we see that Volume of Tocqueville's "Democracy in America" is stored as "815", while Volume 2 is stored as "816".
+Here, we see that Volume of Tocqueville's "Democracy in America" is stored as "815". A separate search reveals that Volume 2 is stored as "816".
 
 ```{r, eval=F}
 tocq <- gutenberg_download(c(815, 816), 
@@ -57,19 +57,9 @@ tocq <- readRDS("data/tocq.RDS")
 ```
 
 
-
-```{r}
-tidy_tocq <- tocq %>%
-  unnest_tokens(word, text) %>%
-  anti_join(stop_words)
-
-## Count most common words in both
-tidy_tocq %>%
-  count(word, sort = TRUE)
-
-```
-
 ## Convert to document-term-matrix
+
+Once we have read in these data, we convert it into a different data shape: the document-term-matrix. We also create a new columns, which we call "booknumber" that recordss whether the term in question is from Volume 1 or Volume 2. To convert from tidy into "DocumentTermMatrix" format we can first use `unnest_tokens()` as we have done in past exercises, remove stop words, and then use the `cast_dtm()` function to convert into a "DocumentTermMatrix" object.
 
 ```{r}
 tocq_words <- tocq %>%
@@ -85,21 +75,30 @@ tocq_dtm <- tocq_words %>%
 tm::inspect(tocq_dtm)
 ```
 
+We see here that the data are now stored as a "DocumentTermMatrix." In this format, the matrix records the term (as equivalent of a column) and the document (as equivalent of row), and the number of times the term appears in the given document. Many terms will not appear in the document, meaning that the matrix will be stored as "sparse," meaning there will be a preponderance of zeroes. Here, since we are looking only at two documents that both come from a single volume set, the sparsity is relatively low (only 27%). In most applications, the sparsity will be a lot higher, approaching 99% or more.
+
+Estimating our topic model is then relatively simple. All we need to do if specify how many topics that we want to search for, and we can also set our seed, which is needed to reproduce the same results each time (as the model is a generative probabilistic one, meaning different random iterations will produce different results).
+
 ```{r}
 
 tocq_lda <- LDA(tocq_dtm, k = 10, control = list(seed = 1234))
-#  Extract the per-topic-per-word probabilities, called "β" from the model.
-tocq_topics <- tidy(tocq_lda, matrix = "beta")
 
 ```
 
-```{r}
-# Notice that this has turned the model into a one-topic-per-term-per-row 
-# format. For each combination, the model computes the probability of that 
-# term being generated from that topic. For example, the term “democratic” has a  
-# 0.00674 probability of being generated from topic 1, but a 0.00606 probability
-# of being generated from topic 2.
+After this we can extract the per-topic-per-word probabilities, called "β" from the model:
 
+```{r}
+tocq_topics <- tidy(tocq_lda, matrix = "beta")
+
+head(tocq_topics, n = 10)
+
+```
+
+We now have data stored as one topic-per-term-per-row. The betas listed here represent the probability that the given term belongs to a given topic. So, here, we see that the term "democratic" is most likely to belong to topic 4. Strictly, this probability represents the probability that the term is generated from the topic in question.
+
+We can then plots the top terms, in terms of beta, for each topic as follows:
+
+```{r}
 tocq_top_terms <- tocq_topics %>%
   group_by(topic) %>%
   top_n(10, beta) %>%
@@ -111,36 +110,28 @@ tocq_top_terms %>%
   ggplot(aes(beta, term, fill = factor(topic))) +
   geom_col(show.legend = FALSE) +
   facet_wrap(~ topic, scales = "free", ncol = 4) +
-  scale_y_reordered()
-
-beta_spread <- tocq_topics %>%
-  mutate(topic = paste0("topic", topic)) %>%
-  spread(topic, beta) %>%
-  filter(topic1 > .001 | topic2 > .001) %>%
-  mutate(log_ratio = log2(topic2 / topic1))
-
-beta_spread %>%
-  group_by(direction = log_ratio > 0) %>%
-  top_n(10, abs(log_ratio)) %>%
-  ungroup() %>%
-  mutate(term = reorder(term, log_ratio)) %>%
-  ggplot(aes(log_ratio, term)) +
-  geom_col() +
-  theme_tufte(base_family = "Helvetica") +
-  labs(x = "Log2 ratio of beta in topic 2 / topic 1", y = NULL)
-
-
-
+  scale_y_reordered() +
+  theme_tufte(base_family = "Helvetica")
 
 ```
 
-But how do we actually evaluate these topics? Her, the topics all seem pretty similar. One way to evaluate the performance of unspervised forms of classification is by testing our model on an outcome that is already known. Here, two topics that are most obvious are the 'topics' Volume 1 and Volume 2 of Tocqueville's "Democracy in America." Volume 1 of Tocqueville's work deals more obviously with abstract constitutional ideas and questions of race; Volume 2 focuses on more esoteric aspects of American society. Listen an "In Our Time" episode with Melvyn Bragg discussing Democracy in America [here](https://www.bbc.co.uk/programmes/b09vyw0x).
+But how do we actually evaluate these topics? Here, the topics all seem pretty similar. Well, one way to evaluate the performance of unspervised forms of classification is by testing our model on an outcome that is already known. 
 
-Given these differences in focus, we might think that a generative model could estimate assignment to topic (i.e., Volume) with some accuracy. 
+Here, two topics that are most obvious are the 'topics' Volume 1 and Volume 2 of Tocqueville's "Democracy in America." Volume 1 of Tocqueville's work deals more obviously with abstract constitutional ideas and questions of race; Volume 2 focuses on more esoteric aspects of American society. Listen an "In Our Time" episode with Melvyn Bragg discussing Democracy in America [here](https://www.bbc.co.uk/programmes/b09vyw0x).
+
+Given these differences in focus, we might think that a generative model could accurately assign to topic (i.e., Volume) with some accuracy. 
 
 First let's have a look and see whether there really are words obviously distinguishing the two Volumes. 
 
 ```{r}
+
+tidy_tocq <- tocq %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words)
+
+## Count most common words in both
+tidy_tocq %>%
+  count(word, sort = TRUE)
 
 bookfreq <- tidy_tocq %>%
   mutate(booknumber = ifelse(gutenberg_id==815, "DiA1", "DiA2")) %>%
@@ -168,12 +159,11 @@ ggplot(bookfreq, aes(x = DiA1, y = DiA2, color = abs(DiA1 - DiA2))) +
 
 ```
 
-```{r}
+We see that there do seem to be some marked distinguishing characteristics. In the plot above, for example, we see that more abstract notions of state systems appear with greater frequency in Volume 1 while Volume 2 seems to contain words specific to America (e.g., "north" and "south") with greater frequency. The way to read the above plot is that words positioned further away from the diagonal line appear with greater frequency in one volume versus the other.
 
-tocq_lda <- LDA(tocq_dtm, k = 2, control = list(seed = 1234))
-#  Extract the per-topic-per-word probabilities, called "β" from the model.
-tocq_topics <- tidy(tocq_lda, matrix = "beta")
-tocq_topics
+To evaluate whether a topic model is able to generatively assign to volume with accuracy, we first need to re-estimate the topic model with our k of topics equal to 2. 
+
+```{r}
 
 # Divide into documents, each representing one chapter
 tocq_chapter <- tocq %>%
@@ -201,23 +191,19 @@ tocq_word_counts
 tocq_chapters_dtm <- tocq_word_counts %>%
   cast_dtm(document, word, n)
 
+tm::inspect(tocq_chapters_dtm)
+
+```
+
+In the above, we have first separated the volumes into chapters, then we have repeated the same procedure above. The only difference now is that instead of two documents representing the two full volumes of Tocqueville's work, we now have 132 documents, each representing an individual chapter. Notice now that the sparsity is much increased: around 96%. 
+
+We then re-estimate the topic model with this new DocumentTermMatrix
+
+```{r}
+
 # Look for 2 topics across all chapters 
 # (one would assume these correspond to vols. 1 and 2)
 tocq_chapters_lda <- LDA(tocq_chapters_dtm, k = 2, control = list(seed = 1234))
-
-# Examine per-topic-per-word probabilities
-tocq_chapter_topics <- tidy(tocq_chapters_lda, matrix = "beta")
-tocq_chapter_topics
-
-# Find top 5 terms within each topic
-
-tocq_top_terms <- tocq_chapter_topics %>%
-  group_by(topic) %>%
-  top_n(5, beta) %>%
-  ungroup() %>%
-  arrange(topic, -beta)
-
-tocq_top_terms
 
 # Look at per-document-per-topic probabilities ("gamma")
 
