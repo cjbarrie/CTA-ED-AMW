@@ -52,12 +52,6 @@ Here, we see that Volume of Tocqueville's "Democracy in America" is stored as "8
 ```r
 tocq <- gutenberg_download(c(815, 816), 
                             meta_fields = "author")
-
-tocq1 <- gutenberg_download(c(815), 
-                              meta_fields = "author")
-
-tocq2 <- gutenberg_download(c(816), 
-                            meta_fields = "author")
 ```
 
 

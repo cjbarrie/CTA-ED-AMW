@@ -9,10 +9,6 @@ transition: none
   github: https://github.com/cjbarrie       
   Twitter: https://www.twitter.com/cbarrie
 
-Word frequency analysis
-========================================================
-
-
 Running Your First Analysis: Tahrir Documents
 ========================================================
 

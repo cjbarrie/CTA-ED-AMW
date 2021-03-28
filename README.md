@@ -19,4 +19,4 @@ Each subsequent document is dedicated to a particular text analysis technique, a
 - Introduction: \[[Worksheet](https://raw.githack.com/cjbarrie/CTA-Ed/main/00-intro/00-intro.html)\]
 - Exercise 1: Text as data---word frequency analysis: \[[Worksheet](https://raw.githack.com/cjbarrie/CTA-Ed/main/01-word-freq/01-word-freq.html)\]\[[Slides](https://raw.githack.com/cjbarrie/CTA-Ed/main/01-word-freq/01-word-freq-pres.html)\]
 - Exercise 2: Text as data---sentiment analysis: \[[Worksheet](https://raw.githack.com/cjbarrie/CTA-Ed/main/02-sent-analysis/02-sent-analysis.html)\]\[[Slides](https://raw.githack.com/cjbarrie/CTA-Ed/main/02-sent-analysis/02-sent-analysis-pres.html)\]
-- Exercise 3: Text as data---topic modeling
+- Exercise 3: Text as data---topic modeling: \[[Worksheet](https://raw.githack.com/cjbarrie/CTA-Ed/main/03-topic-models/03-topic-models.html)\]\[[Slides](https://raw.githack.com/cjbarrie/CTA-Ed/main/03-topic-models/03-topic-models-pres.html)\]

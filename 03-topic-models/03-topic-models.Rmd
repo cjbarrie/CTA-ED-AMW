@@ -50,20 +50,10 @@ Here, we see that Volume of Tocqueville's "Democracy in America" is stored as "8
 ```{r, eval=F}
 tocq <- gutenberg_download(c(815, 816), 
                             meta_fields = "author")
-
-tocq1 <- gutenberg_download(c(815), 
-                              meta_fields = "author")
-
-tocq2 <- gutenberg_download(c(816), 
-                            meta_fields = "author")
 ```
 
 ```{r, echo=F}
 tocq <- readRDS("data/tocq.RDS")
-
-tocq1 <- readRDS("data/tocq1.RDS")
-
-tocq2 <-readRDS("data/tocq2.RDS")
 ```
 
 
