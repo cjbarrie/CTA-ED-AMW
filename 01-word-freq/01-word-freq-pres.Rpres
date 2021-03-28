@@ -2,7 +2,7 @@ Word frequencies
 ========================================================
 author: Christopher Barrie 
 date: University of Edinburgh
-width: 2500
+width: 1800
 height: 900
 transition: none  
   website: https://cjbarrie.xyz     
@@ -12,6 +12,43 @@ transition: none
 Word frequency analysis
 ========================================================
 
+- Tokenizing
+- Counting words over space/time
+
+========================================================
+
+<center>
+![](images/mildigbooks.png)
+</center>
+
+Word frequency analysis
+========================================================
+
+```{r, echo=F, message=F, warning=F}
+library(tidytext)
+library(janeaustenr)
+library(tidyverse)
+
+bookdata <- tibble(txt = prideprejudice)
+
+```
+
+```{r}
+
+head(bookdata)
+
+```
+
+Word frequency analysis
+========================================================
+
+```{r}
+
+bookdata %>%
+  unnest_tokens(word, txt) %>%
+  count(word, sort=T)
+
+```
 
 Running Your First Analysis: Edinburgh Book Festival
 ========================================================

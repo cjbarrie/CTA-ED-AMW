@@ -2,7 +2,7 @@ Word frequencies
 ========================================================
 author: Christopher Barrie 
 date: University of Edinburgh
-width: 2500
+width: 1800
 height: 900
 transition: none  
   website: https://cjbarrie.xyz     
@@ -12,6 +12,63 @@ transition: none
 Word frequency analysis
 ========================================================
 
+- Tokenizing
+- Counting words over space/time
+
+========================================================
+
+<center>
+![](images/mildigbooks.png)
+</center>
+
+Word frequency analysis
+========================================================
+
+
+
+
+```r
+head(bookdata)
+```
+
+```
+# A tibble: 6 x 1
+  txt                  
+  <chr>                
+1 "PRIDE AND PREJUDICE"
+2 ""                   
+3 "By Jane Austen"     
+4 ""                   
+5 ""                   
+6 ""                   
+```
+
+Word frequency analysis
+========================================================
+
+
+```r
+bookdata %>%
+  unnest_tokens(word, txt) %>%
+  count(word, sort=T)
+```
+
+```
+# A tibble: 6,538 x 2
+   word      n
+   <chr> <int>
+ 1 the    4331
+ 2 to     4162
+ 3 of     3610
+ 4 and    3585
+ 5 her    2203
+ 6 i      2065
+ 7 a      1954
+ 8 in     1880
+ 9 was    1843
+10 she    1695
+# … with 6,528 more rows
+```
 
 Running Your First Analysis: Edinburgh Book Festival
 ========================================================
@@ -147,7 +204,7 @@ ggplot(tidy_wf_plot, aes(n, word)) +
   labs(y = NULL)
 ```
 
-![plot of chunk unnamed-chunk-9](01-word-freq-pres-figure/unnamed-chunk-9-1.png)
+![plot of chunk unnamed-chunk-12](01-word-freq-pres-figure/unnamed-chunk-12-1.png)
 
 Tag target words
 ========================================================
@@ -190,4 +247,4 @@ ggplot(edbf_counts, aes(year, sum_wom / year_total, group=1)) +
                      expand = c(0, 0), limits = c(0, NA))
 ```
 
-![plot of chunk unnamed-chunk-13](01-word-freq-pres-figure/unnamed-chunk-13-1.png)
+![plot of chunk unnamed-chunk-16](01-word-freq-pres-figure/unnamed-chunk-16-1.png)
