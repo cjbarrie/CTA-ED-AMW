@@ -7,16 +7,6 @@
 }
 
 
-.section .reveal .state-background {
-    background: white;}
-.section .reveal h1,
-.section .reveal p {
-    color: black;
-    position: relative;
-    top: 4%;}
-
-
-
 </style>
 
 
