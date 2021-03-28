@@ -28,6 +28,7 @@ In this tutorial, you will learn how to:
 * Use dictionary-based techniques to analyze text
 * Use common sentiment dictionaries
 * Apply more advanced sentiment analysis techniques, e.g., accounting for "valence shifters."
+* Create your own dictionary
 
 ## Setup 
 

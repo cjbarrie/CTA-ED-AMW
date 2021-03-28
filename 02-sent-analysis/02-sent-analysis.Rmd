@@ -28,6 +28,7 @@ In this tutorial, you will learn how to:
 * Use dictionary-based techniques to analyze text
 * Use common sentiment dictionaries
 * Apply more advanced sentiment analysis techniques, e.g., accounting for "valence shifters."
+* Create your own dictionary
 
 ## Setup 
 
@@ -48,7 +49,6 @@ library(tidyverse) # loads dplyr, ggplot2, and others
 library(readr) # more informative and easy way to import data
 library(stringr) # to handle text elements
 library(tidytext) # includes set of functions useful for manipulating text
-
 ```
 
 We can download the final dataset with:
@@ -108,7 +108,7 @@ Several sentiment dictionaries come bundled with the <tt>tidytext</tt> package. 
 
 We can have a look at some of these to see how the relevant dictionaries are stored. 
 
-```{r}
+```{r,}
 get_sentiments("afinn")
 ```
 
