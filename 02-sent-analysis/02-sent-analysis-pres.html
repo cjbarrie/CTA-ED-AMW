@@ -805,9 +805,6 @@ hljs.initHighlightingOnLoad();
 <section data-transition="none" data-transition-speed="default">
 <h3>Running Your First Analysis: Tahrir Documents</h3>
 <div class="slideContent" >
-<pre><code class="r">library(&#39;knitr&#39;)
-</code></pre>
-
 <pre><code class="r">library(tidyverse) # loads dplyr, ggplot2, and others
 library(readr) # more informative and easy way to import data
 library(stringr) # to handle text elements
@@ -979,19 +976,6 @@ tidy_pamph$order &lt;- 1:nrow(tidy_pamph)
 <pre><code class="r">#join pamphlets with nrc sentiment data
 pamph_nrc_sentiment &lt;- tidy_pamph %&gt;%
   inner_join(get_sentiments(&quot;nrc&quot;))
-
-head(pamph_nrc_sentiment)
-</code></pre>
-
-<pre><code># A tibble: 6 x 11
-  title  date        year text  tags  imageurl imgID image word  order sentiment
-  &lt;chr&gt;  &lt;date&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;int&gt; &lt;chr&gt;    
-1 The R… 2011-03-11  2011 [Pag… Regi… https:/… imgI… &lt;NA&gt;  revo…     3 anger    
-2 The R… 2011-03-11  2011 [Pag… Regi… https:/… imgI… &lt;NA&gt;  revo…     3 anticipa…
-3 The R… 2011-03-11  2011 [Pag… Regi… https:/… imgI… &lt;NA&gt;  revo…     3 fear     
-4 The R… 2011-03-11  2011 [Pag… Regi… https:/… imgI… &lt;NA&gt;  revo…     3 negative 
-5 The R… 2011-03-11  2011 [Pag… Regi… https:/… imgI… &lt;NA&gt;  revo…     3 positive 
-6 The R… 2011-03-11  2011 [Pag… Regi… https:/… imgI… &lt;NA&gt;  revo…     3 sadness  
 </code></pre>
 
 </div>
@@ -1032,15 +1016,14 @@ head(pamph_nrc_sentiment)
 </code></pre>
 
 <pre><code># A tibble: 6 x 12
-  date       index anger anticipation disgust  fear   joy negative positive
-  &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-1 2011-03-11     0    18           13      16    25    12       32       36
-2 2011-03-13     0    26           27      11    35    18       38       89
-3 2011-03-14     0     2            2       1     3     0        4        6
-4 2011-03-15     0    34           25       6    31    10       51       47
-5 2011-03-15     1    51           79      22    80    62       88      168
-6 2011-03-15     2     3            2       1     3     4        4       18
-# … with 3 more variables: sadness &lt;dbl&gt;, surprise &lt;dbl&gt;, trust &lt;dbl&gt;
+  date       index anger anticipation disgust  fear   joy negative positive sadness surprise trust
+  &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;
+1 2011-03-11     0    18           13      16    25    12       32       36      14        9    29
+2 2011-03-13     0    26           27      11    35    18       38       89      24       11    52
+3 2011-03-14     0     2            2       1     3     0        4        6       2        3     2
+4 2011-03-15     0    34           25       6    31    10       51       47      27       17    27
+5 2011-03-15     1    51           79      22    80    62       88      168      53       42   109
+6 2011-03-15     2     3            2       1     3     4        4       18       2        1    19
 </code></pre>
 
 </div>
@@ -1057,16 +1040,14 @@ head(pamph_nrc_sentiment)
 </code></pre>
 
 <pre><code># A tibble: 6 x 13
-  date       index anger anticipation disgust  fear   joy negative positive
-  &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-1 2011-03-11     0    18           13      16    25    12       32       36
-2 2011-03-13     0    26           27      11    35    18       38       89
-3 2011-03-14     0     2            2       1     3     0        4        6
-4 2011-03-15     0    34           25       6    31    10       51       47
-5 2011-03-15     1    51           79      22    80    62       88      168
-6 2011-03-15     2     3            2       1     3     4        4       18
-# … with 4 more variables: sadness &lt;dbl&gt;, surprise &lt;dbl&gt;, trust &lt;dbl&gt;,
-#   sentiment &lt;dbl&gt;
+  date       index anger anticipation disgust  fear   joy negative positive sadness surprise trust sentiment
+  &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;
+1 2011-03-11     0    18           13      16    25    12       32       36      14        9    29         4
+2 2011-03-13     0    26           27      11    35    18       38       89      24       11    52        51
+3 2011-03-14     0     2            2       1     3     0        4        6       2        3     2         2
+4 2011-03-15     0    34           25       6    31    10       51       47      27       17    27        -4
+5 2011-03-15     1    51           79      22    80    62       88      168      53       42   109        80
+6 2011-03-15     2     3            2       1     3     4        4       18       2        1    19        14
 </code></pre>
 
 </div>
@@ -1142,8 +1123,8 @@ function commandsForSlide(indexh) {
       transition: 'none',
       transitionSpeed: 'default',
       rtl: false,
-      width: 960,
-      height: 700,
+      width: 2500,
+      height: 900,
     
       dependencies: []
     });
