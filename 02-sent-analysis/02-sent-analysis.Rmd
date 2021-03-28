@@ -266,7 +266,89 @@ pamphdata %>%
 ```
 
 ![](images/senthighlight.png)
-What do we make of how this text has been scored? There does seem to be some logic to the sections coded as positive versus negative. But more than anything, this shows us that there is clear error in how texts are scored, even when valence shifting is taken into account. 
+What do we make of how this text has been scored? There does seem to be some logic to the sections coded as positive versus negative. But more than anything, this shows us that there is clear error in how texts are scored, even when valence shifting is taken into account.
 
+## Domain-specific lexicons
+
+Of course, list- or dictionary-based methods need not only focus on sentiment, even if this is one of their most common uses. In essence, what you'll have seen from the above is that sentiment analysis techniques rely on a given lexicon and score words appropriately. And there is nothing stopping us from making our own dictionaries, whether they measure sentiment or not. In the data above, we might be interested, for example, in the demands individuals or organizations are advancing at protests. As such, we might choose to make our own dictionary of terms. What would this look like?
+
+A very minimal example would choose, for example, words like "demand" and its synonyms and score these all as 1. We would then combine these into a dictionary, which we've called "demdict" here. 
+
+```{r}
+
+word <- c('demand', 'claim', 'call', 'insist')
+value <- c(1, 1, 1, 1)
+demdict <- data.frame(word, value)
+
+demdict
+
+```
+
+We could then use the same technique as above to bind these with our data and look at the incidence of such words over time. Combining the sequence of scripts from above we would do the following:
+
+```{r}
+#get tidy version of pamphlet data
+tidy_pamph <- pamphdata %>% 
+  mutate(desc = tolower(text)) %>%
+  unnest_tokens(word, desc) %>%
+  filter(str_detect(word, "[a-z]"))
+
+#remove stopwords
+tidy_pamph <- tidy_pamph %>%
+    filter(!word %in% stop_words$word)
+
+#order and format date
+tidy_pamph<- tidy_pamph %>%
+  arrange(date)
+#get indexing column
+tidy_pamph$order <- 1:nrow(tidy_pamph)
+
+tidy_pamph %>%
+  inner_join(demdict) %>%
+  group_by(date, index = order %/% 1000) %>% 
+  summarise(demandwords = sum(value)) %>% 
+  ggplot(aes(date, demandwords)) +
+  geom_point(alpha=0.5) +
+  geom_smooth(method= loess, alpha=0.25) +
+  ylab("demand words")
+```
+
+The above simply counts the number of demand words over time. This might be misleading if there are, for example, more or longer documents at certain points in time; i.e., if the length or quantity of text is not time-constant. Why would this matter? Well, in the above it could just be that we have more demand words earlier on because there are just more pamphlets earlier on. By just counting words, we are not taking into account the denominator.
+
+
+An alternative, and preferable, method here would simply take a character string of the relevant words. We would then sum the total number of words across all pamphlets over time. Then we would filter our pamphlet words by whether or not they are a demand word or not, according to the dictionary of words we have constructed. We would then do the same again with these words, summing the number of times they appear for each data. 
+
+After this, we join with our data frame of total words for each data. Note that here we are using `full_join()` as we want to include dates that appear in the "totals" data frame that do not appear when we filter for demand words; i.e., days when demand words are equal to 0. We then go about plotting as before.
+
+```{r}
+
+demwords <- c('demand', 'claim', 'call', 'insist')
+
+#get total tweets per day (no missing dates so no date completion required)
+totals <- tidy_pamph %>%
+  mutate(obs=1) %>%
+  group_by(date) %>%
+  summarise(sum_words = sum(obs))
+
+#plot
+tidy_pamph %>%
+  mutate(obs=1) %>%
+  filter(grepl(paste0(demwords, collapse = "|"),word, ignore.case = T)) %>%
+  group_by(date) %>%
+  summarise(sum_dwords = sum(obs)) %>%
+  full_join(totals, word, by="date") %>%
+  mutate(sum_dwords= ifelse(is.na(sum_dwords), 0, sum_dwords),
+         pctdwords = sum_dwords/sum_words) %>%
+  ggplot(aes(date, pctdwords)) +
+  geom_point(alpha=0.5) +
+  geom_smooth(method= loess, alpha=0.25) +
+  xlab("Date") + ylab("% demand words")
+
+```
+
+## Exercises
+
+1. Take a subset of the pamphlets data by "tag." These tags describe the content of the pamphlet. Do we see different sentiment dynamics if we look only at a subset of these documents?
+2. Build your own (minimal) dictionary-based filter technique and plot the result
 
 ## References 
