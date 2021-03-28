@@ -75,7 +75,7 @@ bookdata %>%
 <center>
 ![](images/mildigbooksex.png)
 </center>
-
+- Source: Michel et al. 2011. "Quantitative Analysis of Culture Using Millions of Digitized Books," *Science*, 331(6014):176-182.
 
 Running Your First Analysis: Edinburgh Book Festival
 ========================================================
