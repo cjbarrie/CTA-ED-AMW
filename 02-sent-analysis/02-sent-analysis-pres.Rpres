@@ -2,11 +2,8 @@
 <style>
 .reveal section p {
   color: black;
-  font-size: .7em;
   font-family: 'Helvetica'; #this is the font/color of text in slides
 }
-
-
 </style>
 
 
