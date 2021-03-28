@@ -1,36 +1,14 @@
-
-<style>
-.reveal section p {
-  color: black;
-  font-size: .7em;
-  font-family: 'Helvetica'; #this is the font/color of text in slides
-}
-
-
-.section .reveal .state-background {
-    background: white;}
-.section .reveal h1,
-.section .reveal p {
-    color: black;
-    position: relative;
-    top: 4%;}
-
-
-
-</style>
-
-
 Word frequencies
 ========================================================
 author: Christopher Barrie 
 date: University of Edinburgh
-width: 1440
+width: 2500
 height: 900
 transition: none  
   website: https://cjbarrie.xyz     
   github: https://github.com/cjbarrie       
   Twitter: https://www.twitter.com/cbarrie
-
+  
 Word frequency analysis
 ========================================================
 
@@ -211,6 +189,5 @@ ggplot(edbf_counts, aes(year, sum_wom / year_total, group=1)) +
   scale_y_continuous(labels = scales::percent_format(),
                      expand = c(0, 0), limits = c(0, NA))
 ```
-Plot
-========================================================
-![plot of chunk unnamed-chunk-14](01-word-freq-pres-figure/unnamed-chunk-14-1.png)
+
+![plot of chunk unnamed-chunk-13](01-word-freq-pres-figure/unnamed-chunk-13-1.png)
