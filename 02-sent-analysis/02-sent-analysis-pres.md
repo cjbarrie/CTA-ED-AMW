@@ -24,7 +24,7 @@ Sentiment Analysis
 ========================================================
 author: Christopher Barrie 
 date: University of Edinburgh
-width: 1440
+width: 2500
 height: 900
 transition: none  
   website: https://cjbarrie.xyz     
