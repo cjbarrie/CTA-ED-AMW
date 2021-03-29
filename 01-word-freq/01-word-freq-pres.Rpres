@@ -14,6 +14,7 @@ Word frequency analysis
 
 - Tokenizing
 - Counting words over space/time
+- Denominating by totals
 
 ========================================================
 
@@ -50,12 +51,30 @@ bookdata %>%
 
 ```
 
+Word frequency analysis
+========================================================
+
+```{r}
+
+bookdata %>%
+  unnest_tokens(word, txt) %>%
+  filter(!word %in% stop_words$word) %>%
+  count(word, sort=T)
+
+```
+
 ========================================================
 
 <center>
 ![](images/mildigbooksex.png)
 </center>
 - Source: Michel et al. 2011. "Quantitative Analysis of Culture Using Millions of Digitized Books," *Science*, 331(6014):176-182.
+
+========================================================
+
+<center>
+![](images/mildigbooksfreq.png)
+</center>
 
 Running Your First Analysis: Edinburgh Book Festival
 ========================================================
@@ -110,7 +129,7 @@ Further cleaning
 ```{r, message=FALSE, warning=FALSE, eval=TRUE}
 #remove punctuation
 remove_reg <- c("&amp;","&lt;","&gt;","<p>", "</p>","&rsquo", "&lsquo;",  "&#39;", "<strong>", "</strong>", "rsquo", "em", "ndash", "nbsp", "lsquo", "strong")
-reg_match <- str_c(remove_reg, collapse = "|")
+reg_match <- paste0(remove_reg, collapse = "|")
                   
 tidy_des <- tidy_des %>%
   filter(!word %in% remove_reg)
@@ -126,7 +145,7 @@ tidy_des %>%
 Compute counts for plotting
 ========================================================
 ```{r, message=FALSE, warning=FALSE, eval=TRUE}
-tidy_wf_plot <- tidy_des %>%
+tidy_des %>%
   count(word, sort = TRUE) %>%
   filter(n > 600) %>%
   mutate(word = reorder(word, n))
@@ -137,9 +156,15 @@ Plot
 ========================================================
 
 ```{r}
-ggplot(tidy_wf_plot, aes(n, word)) +
+
+tidy_des %>%
+  count(word, sort = TRUE) %>%
+  filter(n > 700) %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(n, word)) +
   geom_col() +
   labs(y = NULL)
+
 ```
 
 Tag target words
@@ -179,3 +204,12 @@ ggplot(edbf_counts, aes(year, sum_wom / year_total, group=1)) +
                      expand = c(0, 0), limits = c(0, NA))
 
 ```
+
+Worksheet
+========================================================
+
+- [https://github.com/cjbarrie/CTA-Ed](https://github.com/cjbarrie/CTA-Ed)
+
+<center>
+![](images/githubshot.png)
+</center>

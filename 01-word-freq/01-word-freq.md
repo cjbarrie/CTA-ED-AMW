@@ -4,7 +4,7 @@ subtitle: "Research Training Centre Micro-Methods Workshop"
 author:
   name: Christopher Barrie
   affiliation: University of Edinburgh | [CTA](https://github.com/cjbarrie/CTA-Ed)
-# date: Lecture 6  #"27 March 2021"
+# date: Lecture 6  #"29 March 2021"
 output: 
   html_document:
     theme: flatly
@@ -202,15 +202,11 @@ tidy_des <- evdes %>%
 
 We see that the resulting dataset is large (~293k rows). This is because the above commands have first taken the pamphlet text, and has "mutated" it into a set of lower case character string. With the "unnest_tokens" function it has then taken each individual string and create a new column called "word" that contains each individual word contained in the pamphlet texts.
 
-We can yet tidy this further, though. First we'll remove all stop words:
+Some terminology is also appropriate here. When we tidy our text into this format, we often refer to these data structures as consisting of "documents" and "terms." This is because by "tokenizing" our text with the "unnest_tokens" functions we are generating a dataset with one term per row. 
 
+Here, our "documents" are the collection of descriptions for all events in each year at the Edinburgh Book Festival. The way in which we sort our text into "documents" depends on the choice of the individual researcher. Instead of by year, we might have wanted to sort our text into "genre." Here, we have two genres: "Literature" and "Children." Had we done so, we would then have only two "documents," which contained all of the words included in the event descriptions for each genre. 
 
-```r
-tidy_des <- tidy_des %>%
-    filter(!word %in% stop_words$word)
-```
-
-Some terminology is also appropriate here. When we tidy our text into this format, we often refer to these data structures as consisting of "documents" and "terms." This is because by "tokenizing" our text with the "unnest_tokens" functions we are generating a dataset with one term per row. Here, our "documents" are the collection of descriptions for all events in each year at the Edinburgh Book Festival. The way in which we sort our text into "documents" depends on the choice of the individual researcher. Instead of by year, we might have wanted to sort our text into "genre." Here, we have two genres: "Literature" and "Children." Had we done so, we would then have only two "documents," which contained all of the words included in the event descriptions for each genre. Alternatively, we might be interested in the contributions of individual authors over time. Were this the case, we could have sorted our text into documents by author. In this case, each "document" would represent all the words included in event descriptions for events by the given author (many of whom do have multiple appearances over time or in the same festival for a given year).
+Alternatively, we might be interested in the contributions of individual authors over time. Were this the case, we could have sorted our text into documents by author. In this case, each "document" would represent all the words included in event descriptions for events by the given author (many of whom do have multiple appearances over time or in the same festival for a given year).
  
 We can yet tidy this further, though. First we'll remove all stop words and then we'll remove all apostrophes:
 
@@ -277,7 +273,7 @@ We can see that one of the most common words is "rsquo," which is an HTML encodi
 ```r
 #remove punctuation
 remove_reg <- c("&amp;","&lt;","&gt;","<p>", "</p>","&rsquo", "&lsquo;",  "&#39;", "<strong>", "</strong>", "rsquo", "em", "ndash", "nbsp", "lsquo", "strong")
-reg_match <- str_c(remove_reg, collapse = "|")
+reg_match <- paste0(remove_reg, collapse = "|")
                   
 tidy_des <- tidy_des %>%
   filter(!word %in% remove_reg)
@@ -419,29 +415,7 @@ ggplot(edbf_counts, aes(year, sum_wom / year_total, group=1)) +
   theme_tufte(base_family = "Helvetica") 
 ```
 
-![](01-word-freq_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
-
-In the above, we are looking at the proportions of gender-related words over time as a proportion of total words in each year. @nelson_computational_2020 recommends looking into differences in proportions between years or between documents. This is also straightforward to compute. We can understand each year as an individual "document" containing a "bag of words." To compute the differences in proportions year on year, we need calculate the difference by subtracting the proportion of year y from year y+1. 
-
-
-```r
-edbf_diffs <- edbf_counts %>%
-  mutate(prop = sum_wom/year_total,
-         prop_y1 = lag(prop),
-         diffprop = ifelse(!is.na(prop_y1), prop-prop_y1, prop))
-
-ggplot(edbf_diffs, aes(year, diffprop, group=1)) +
-  geom_line() +
-  xlab("Year") +
-  ylab("year-on-year difference in % gender-related words") +
-  scale_y_continuous(labels = scales::percent_format(),
-                     expand = c(0, 0)) +
-  theme_tufte(base_family = "Helvetica")
-```
-
-![](01-word-freq_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
-
-What do we see from this graph? Arguably this is harder to intepret, even if it does better visualize the year-on-year changes. Because we are looking at year-on-year changes, though, it means the overall trend is harder to determine. We will return to the approach we used in the second-to-last graph; that is, plotting the overall proportion of gender-related words for each year. 
+![](01-word-freq_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
 
 We can add visual guides to draw attention to apparent changes in these data. Here, we might wish to signal the year of the #MeToo movement in 2017.
 
@@ -457,7 +431,7 @@ ggplot(edbf_counts, aes(year, sum_wom / year_total, group=1)) +
   theme_tufte(base_family = "Helvetica")
 ```
 
-![](01-word-freq_files/figure-html/unnamed-chunk-24-1.png)<!-- -->
+![](01-word-freq_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
 
 And we could label why we are highlighting the year of 2017 by including a text label along the vertical line. 
 
@@ -475,7 +449,7 @@ ggplot(edbf_counts, aes(year, sum_wom / year_total, group=1)) +
   theme_tufte(base_family = "Helvetica")
 ```
 
-![](01-word-freq_files/figure-html/unnamed-chunk-25-1.png)<!-- -->
+![](01-word-freq_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
 
 ## Gender prediction
 
@@ -611,7 +585,7 @@ ggplot(ednameprops, aes(x=year, fill = factor(sex))) +
   geom_abline(slope=0, intercept=0.5,  col = "black",lty=2)
 ```
 
-![](01-word-freq_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
+![](01-word-freq_files/figure-html/unnamed-chunk-29-1.png)<!-- -->
 
 What can we conclude form this graph?
 
@@ -674,5 +648,11 @@ diffs
 ```
 
 Do we notice anything about these names? What does this tell us about the potential biases of using such sources as US baby names data as a foundation for gender prediction? What are alternative ways we might go about this task?
+
+## Exercises
+
+1. Filter the books by genre (selecting e.g., "Literature" or "Children") and plot frequency of women-related words over time.
+2. Choose another set of terms to filter by (e.g., race-related words) and plot their frequency over time.
+
 
 ## References 

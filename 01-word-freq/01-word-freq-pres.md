@@ -14,6 +14,7 @@ Word frequency analysis
 
 - Tokenizing
 - Counting words over space/time
+- Denominating by totals
 
 ========================================================
 
@@ -70,12 +71,46 @@ bookdata %>%
 # … with 6,528 more rows
 ```
 
+Word frequency analysis
+========================================================
+
+
+```r
+bookdata %>%
+  unnest_tokens(word, txt) %>%
+  filter(!word %in% stop_words$word) %>%
+  count(word, sort=T)
+```
+
+```
+# A tibble: 6,009 x 2
+   word          n
+   <chr>     <int>
+ 1 elizabeth   597
+ 2 darcy       373
+ 3 bennet      294
+ 4 miss        283
+ 5 jane        264
+ 6 bingley     257
+ 7 time        203
+ 8 lady        183
+ 9 sister      180
+10 wickham     162
+# … with 5,999 more rows
+```
+
 ========================================================
 
 <center>
 ![](images/mildigbooksex.png)
 </center>
 - Source: Michel et al. 2011. "Quantitative Analysis of Culture Using Millions of Digitized Books," *Science*, 331(6014):176-182.
+
+========================================================
+
+<center>
+![](images/mildigbooksfreq.png)
+</center>
 
 Running Your First Analysis: Edinburgh Book Festival
 ========================================================
@@ -160,7 +195,7 @@ Further cleaning
 ```r
 #remove punctuation
 remove_reg <- c("&amp;","&lt;","&gt;","<p>", "</p>","&rsquo", "&lsquo;",  "&#39;", "<strong>", "</strong>", "rsquo", "em", "ndash", "nbsp", "lsquo", "strong")
-reg_match <- str_c(remove_reg, collapse = "|")
+reg_match <- paste0(remove_reg, collapse = "|")
                   
 tidy_des <- tidy_des %>%
   filter(!word %in% remove_reg)
@@ -195,10 +230,35 @@ Compute counts for plotting
 ========================================================
 
 ```r
-tidy_wf_plot <- tidy_des %>%
+tidy_des %>%
   count(word, sort = TRUE) %>%
   filter(n > 600) %>%
   mutate(word = reorder(word, n))
+```
+
+```
+# A tibble: 19 x 2
+   word          n
+   <fct>     <int>
+ 1 book       2088
+ 2 event      1356
+ 3 author     1332
+ 4 world      1240
+ 5 story      1159
+ 6 join       1095
+ 7 life        879
+ 8 stories     860
+ 9 chaired     815
+10 books       767
+11 edinburgh   723
+12 writer      722
+13 festival    710
+14 writers     692
+15 authors     688
+16 reading     681
+17 scottish    625
+18 winning     620
+19 series      617
 ```
 
 Plot
@@ -206,12 +266,16 @@ Plot
 
 
 ```r
-ggplot(tidy_wf_plot, aes(n, word)) +
+tidy_des %>%
+  count(word, sort = TRUE) %>%
+  filter(n > 700) %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(n, word)) +
   geom_col() +
   labs(y = NULL)
 ```
 
-![plot of chunk unnamed-chunk-12](01-word-freq-pres-figure/unnamed-chunk-12-1.png)
+![plot of chunk unnamed-chunk-13](01-word-freq-pres-figure/unnamed-chunk-13-1.png)
 
 Tag target words
 ========================================================
@@ -254,4 +318,13 @@ ggplot(edbf_counts, aes(year, sum_wom / year_total, group=1)) +
                      expand = c(0, 0), limits = c(0, NA))
 ```
 
-![plot of chunk unnamed-chunk-16](01-word-freq-pres-figure/unnamed-chunk-16-1.png)
+![plot of chunk unnamed-chunk-17](01-word-freq-pres-figure/unnamed-chunk-17-1.png)
+
+Worksheet
+========================================================
+
+- [https://github.com/cjbarrie/CTA-Ed](https://github.com/cjbarrie/CTA-Ed)
+
+<center>
+![](images/githubshot.png)
+</center>
