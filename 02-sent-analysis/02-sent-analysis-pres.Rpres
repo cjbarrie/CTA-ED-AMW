@@ -226,3 +226,12 @@ pamph_nrc_sentiment %>%
   geom_smooth(method= loess, alpha=0.25)
 
 ```
+
+Worksheet
+========================================================
+
+- [https://github.com/cjbarrie/CTA-Ed](https://github.com/cjbarrie/CTA-Ed)
+
+<center>
+![](images/githubshot.png)
+</center>

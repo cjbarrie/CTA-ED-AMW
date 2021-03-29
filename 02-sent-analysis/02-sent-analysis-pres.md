@@ -356,3 +356,12 @@ pamph_nrc_sentiment %>%
 ```
 
 ![plot of chunk unnamed-chunk-17](02-sent-analysis-pres-figure/unnamed-chunk-17-1.png)
+
+Worksheet
+========================================================
+
+- [https://github.com/cjbarrie/CTA-Ed](https://github.com/cjbarrie/CTA-Ed)
+
+<center>
+![](images/githubshot.png)
+</center>
