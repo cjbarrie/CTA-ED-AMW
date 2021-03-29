@@ -234,7 +234,7 @@ library(sentimentr)
 ```
 
 
-```{r, echo=F}
+```{r}
 library(sentimentr)
 
 pamph_sentences <- get_sentences(pamphdata)
@@ -247,11 +247,9 @@ pamph_sentences_sent %>%
   geom_point(alpha=0.5) +
   geom_smooth(method= loess, alpha=0.25)
 
-
-
 ```
 
-With the <tt>sentimentr</tt> package we can check how this dictionary-based method is scoring words byu outputting random sections of text and highlighting them red or green based on the sentiment score attached to the sentence in question. This is easy to achieve with some in-built functions that come with the package: 
+With the <tt>sentimentr</tt> package we can check how this dictionary-based method is scoring words by outputting random sections of text and highlighting them red or green based on the sentiment score attached to the sentence in question. This is easy to achieve with some in-built functions that come with the package: 
 
 
 ```{r, eval=F}

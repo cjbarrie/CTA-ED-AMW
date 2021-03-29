@@ -193,7 +193,6 @@ Further cleaning
 ========================================================
 
 ```r
-#remove punctuation
 remove_reg <- c("&amp;","&lt;","&gt;","<p>", "</p>","&rsquo", "&lsquo;",  "&#39;", "<strong>", "</strong>", "rsquo", "em", "ndash", "nbsp", "lsquo", "strong")
 reg_match <- paste0(remove_reg, collapse = "|")
                   

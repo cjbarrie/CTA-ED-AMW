@@ -999,8 +999,7 @@ $ year        &lt;dbl&gt; 2012, 2012, 2012, 2012, 2012, 2012, 2012, 2012, 2012, 
 <section data-transition="none" data-transition-speed="default">
 <h3>Further cleaning</h3>
 <div class="slideContent" >
-<pre><code class="r">#remove punctuation
-remove_reg &lt;- c(&quot;&amp;amp;&quot;,&quot;&amp;lt;&quot;,&quot;&amp;gt;&quot;,&quot;&lt;p&gt;&quot;, &quot;&lt;/p&gt;&quot;,&quot;&amp;rsquo&quot;, &quot;&amp;lsquo;&quot;,  &quot;&amp;#39;&quot;, &quot;&lt;strong&gt;&quot;, &quot;&lt;/strong&gt;&quot;, &quot;rsquo&quot;, &quot;em&quot;, &quot;ndash&quot;, &quot;nbsp&quot;, &quot;lsquo&quot;, &quot;strong&quot;)
+<pre><code class="r">remove_reg &lt;- c(&quot;&amp;amp;&quot;,&quot;&amp;lt;&quot;,&quot;&amp;gt;&quot;,&quot;&lt;p&gt;&quot;, &quot;&lt;/p&gt;&quot;,&quot;&amp;rsquo&quot;, &quot;&amp;lsquo;&quot;,  &quot;&amp;#39;&quot;, &quot;&lt;strong&gt;&quot;, &quot;&lt;/strong&gt;&quot;, &quot;rsquo&quot;, &quot;em&quot;, &quot;ndash&quot;, &quot;nbsp&quot;, &quot;lsquo&quot;, &quot;strong&quot;)
 reg_match &lt;- paste0(remove_reg, collapse = &quot;|&quot;)
 
 tidy_des &lt;- tidy_des %&gt;%

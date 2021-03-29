@@ -165,7 +165,6 @@ tidy_des %>%
 We can see that one of the most common words is "rsquo," which is an HTML encoding for an apostrophe. Clearly we need to clean the data a bit more. This is a common issue in large-n text analysis and is a key step if you want to conduct reliably robust forms of text analysis. We'll have another go using the the filter command, specifying that we only keep the words that are not included in the string of words `r c("rsquo", "em", "ndash", "nbsp", "lsquo") `.
 
 ```{r}
-#remove punctuation
 remove_reg <- c("&amp;","&lt;","&gt;","<p>", "</p>","&rsquo", "&lsquo;",  "&#39;", "<strong>", "</strong>", "rsquo", "em", "ndash", "nbsp", "lsquo", "strong")
 reg_match <- paste0(remove_reg, collapse = "|")
                   

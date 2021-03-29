@@ -4,7 +4,7 @@ subtitle: "Research Training Centre Micro-Methods Workshop"
 author:
   name: Christopher Barrie
   affiliation: University of Edinburgh | [CTA](https://github.com/cjbarrie/CTA-Ed)
-# date: Lecture 6  #"28 March 2021"
+# date: Lecture 6  #"29 March 2021"
 output: 
   html_document:
     theme: flatly
@@ -415,13 +415,27 @@ library(sentimentr)
 
 
 
+```r
+library(sentimentr)
+
+pamph_sentences <- get_sentences(pamphdata)
+pamph_sentences_sent <- sentiment(pamph_sentences)
+
+pamph_sentences_sent %>%
+  group_by(date) %>%
+  summarise(ave_sentiment = mean(sentiment)) %>%
+  ggplot(aes(date, ave_sentiment)) +
+  geom_point(alpha=0.5) +
+  geom_smooth(method= loess, alpha=0.25)
+```
+
 ```
 ## `geom_smooth()` using formula 'y ~ x'
 ```
 
 ![](02-sent-analysis_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
 
-With the <tt>sentimentr</tt> package we can check how this dictionary-based method is scoring words byu outputting random sections of text and highlighting them red or green based on the sentiment score attached to the sentence in question. This is easy to achieve with some in-built functions that come with the package: 
+With the <tt>sentimentr</tt> package we can check how this dictionary-based method is scoring words by outputting random sections of text and highlighting them red or green based on the sentiment score attached to the sentence in question. This is easy to achieve with some in-built functions that come with the package: 
 
 
 
