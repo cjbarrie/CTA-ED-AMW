@@ -1,6 +1,8 @@
 # CTA-Ed
 Repo for teaching materials in Research Training Centre "Computational Text Analysis" micro-methods workshops, University of Edinburgh.
 
+Overview lecture slides [here](https://docs.google.com/viewer?url=https://raw.githubusercontent.com/cjbarrie/CTA-Ed/main/rtc_CTA_intro.pdf)
+
 ![Alt Text](coursebanner.png)
 
 You can use this in several ways:
