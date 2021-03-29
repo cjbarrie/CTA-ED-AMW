@@ -4,7 +4,7 @@ subtitle: "Research Training Centre Micro-Methods Workshop"
 author:
   name: Christopher Barrie
   affiliation: University of Edinburgh | [CTA](https://github.com/cjbarrie/CTA-Ed)
-# date: Lecture 6  #"28 March 2021"
+# date: Lecture 6  #"29 March 2021"
 output: 
   html_document:
     theme: flatly
@@ -46,6 +46,7 @@ library(ggthemes) # to make your plots look nice
 We'll be using data from Alexis de Tocqueville's "Democracy in America." We will download these data , both Volume 1 and Volume 2, and combine them into one data frame. For this, we'll be using the <tt>gutenbergr</tt> package, which allows the user to download text data from over 60,000 out-of-copyright books. The ID for each book appears in the url for the book selected after a search on [https://www.gutenberg.org/ebooks/](https://www.gutenberg.org/ebooks/).
 
 ![](images/gutenberg.gif){width=100%}
+
 Here, we see that Volume of Tocqueville's "Democracy in America" is stored as "815". A separate search reveals that Volume 2 is stored as "816".
 
 
@@ -156,11 +157,17 @@ tocq_top_terms %>%
 
 ![](03-topic-models_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
-But how do we actually evaluate these topics? Here, the topics all seem pretty similar. Well, one way to evaluate the performance of unspervised forms of classification is by testing our model on an outcome that is already known. 
+But how do we actually evaluate these topics? Here, the topics all seem pretty similar. 
+
+## Evaluating topic model
+
+Well, one way to evaluate the performance of unspervised forms of classification is by testing our model on an outcome that is already known. 
 
 Here, two topics that are most obvious are the 'topics' Volume 1 and Volume 2 of Tocqueville's "Democracy in America." Volume 1 of Tocqueville's work deals more obviously with abstract constitutional ideas and questions of race; Volume 2 focuses on more esoteric aspects of American society. Listen an "In Our Time" episode with Melvyn Bragg discussing Democracy in America [here](https://www.bbc.co.uk/programmes/b09vyw0x).
 
-Given these differences in focus, we might think that a generative model could accurately assign to topic (i.e., Volume) with some accuracy. 
+Given these differences in focus, we might think that a generative model could accurately assign to topic (i.e., Volume) with some accuracy.
+
+### Plot relative word frequencies
 
 First let's have a look and see whether there really are words obviously distinguishing the two Volumes. 
 
@@ -234,6 +241,9 @@ ggplot(bookfreq, aes(x = DiA1, y = DiA2, color = abs(DiA1 - DiA2))) +
 ![](03-topic-models_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
 
 We see that there do seem to be some marked distinguishing characteristics. In the plot above, for example, we see that more abstract notions of state systems appear with greater frequency in Volume 1 while Volume 2 seems to contain words specific to America (e.g., "north" and "south") with greater frequency. The way to read the above plot is that words positioned further away from the diagonal line appear with greater frequency in one volume versus the other.
+
+
+### Split into chapter documents
 
 In the below, we first separate the volumes into chapters, then we repeat the same procedure as above. The only difference now is that instead of two documents representing the two full volumes of Tocqueville's work, we now have 132 documents, each representing an individual chapter. Notice now that the sparsity is much increased: around 96%. 
 
@@ -360,6 +370,8 @@ tocq_chapters_gamma
 ## # … with 254 more rows
 ```
 
+### Examine consensus
+
 Now that we have these topic probabilities, we can see how well our unsupervised learning did at distinguishing the two volumes generatively just from the words contained in each chapter.
 
 
@@ -455,6 +467,7 @@ assignments %>%
 
 ![](03-topic-models_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
 
+Not bad! We see that the model estimated with accuracy 91% of chapters in Volume 2 and 79% of chapters in Volume 1
 
 ## Exercises
 

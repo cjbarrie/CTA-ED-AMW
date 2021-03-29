@@ -116,11 +116,17 @@ tocq_top_terms %>%
 
 ```
 
-But how do we actually evaluate these topics? Here, the topics all seem pretty similar. Well, one way to evaluate the performance of unspervised forms of classification is by testing our model on an outcome that is already known. 
+But how do we actually evaluate these topics? Here, the topics all seem pretty similar. 
+
+## Evaluating topic model
+
+Well, one way to evaluate the performance of unspervised forms of classification is by testing our model on an outcome that is already known. 
 
 Here, two topics that are most obvious are the 'topics' Volume 1 and Volume 2 of Tocqueville's "Democracy in America." Volume 1 of Tocqueville's work deals more obviously with abstract constitutional ideas and questions of race; Volume 2 focuses on more esoteric aspects of American society. Listen an "In Our Time" episode with Melvyn Bragg discussing Democracy in America [here](https://www.bbc.co.uk/programmes/b09vyw0x).
 
-Given these differences in focus, we might think that a generative model could accurately assign to topic (i.e., Volume) with some accuracy. 
+Given these differences in focus, we might think that a generative model could accurately assign to topic (i.e., Volume) with some accuracy.
+
+### Plot relative word frequencies
 
 First let's have a look and see whether there really are words obviously distinguishing the two Volumes. 
 
@@ -161,6 +167,9 @@ ggplot(bookfreq, aes(x = DiA1, y = DiA2, color = abs(DiA1 - DiA2))) +
 ```
 
 We see that there do seem to be some marked distinguishing characteristics. In the plot above, for example, we see that more abstract notions of state systems appear with greater frequency in Volume 1 while Volume 2 seems to contain words specific to America (e.g., "north" and "south") with greater frequency. The way to read the above plot is that words positioned further away from the diagonal line appear with greater frequency in one volume versus the other.
+
+
+### Split into chapter documents
 
 In the below, we first separate the volumes into chapters, then we repeat the same procedure as above. The only difference now is that instead of two documents representing the two full volumes of Tocqueville's work, we now have 132 documents, each representing an individual chapter. Notice now that the sparsity is much increased: around 96%. 
 
@@ -213,6 +222,8 @@ tocq_chapters_gamma <- tidy(tocq_chapters_lda, matrix = "gamma")
 tocq_chapters_gamma
 
 ```
+
+### Examine consensus
 
 Now that we have these topic probabilities, we can see how well our unsupervised learning did at distinguishing the two volumes generatively just from the words contained in each chapter.
 
