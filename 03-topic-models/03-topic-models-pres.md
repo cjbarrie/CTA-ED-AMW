@@ -145,3 +145,65 @@ Estimating a topic model
 ```r
 tocq_lda <- LDA(tocq_dtm, k = 10, control = list(seed = 1234))
 ```
+
+Evaluating a topic model
+========================================================
+
+- β: per-topic-per-word probabilities
+    - i.e., the probability that the given term belongs to a given topic
+
+
+```r
+tocq_topics <- tidy(tocq_lda, matrix = "beta")
+head(tocq_topics, n = 10)
+```
+
+```
+# A tibble: 10 x 3
+   topic term          beta
+   <int> <chr>        <dbl>
+ 1     1 democratic 0.00855
+ 2     2 democratic 0.0115 
+ 3     3 democratic 0.00444
+ 4     4 democratic 0.0193 
+ 5     5 democratic 0.00254
+ 6     6 democratic 0.00866
+ 7     7 democratic 0.00165
+ 8     8 democratic 0.0108 
+ 9     9 democratic 0.00276
+10    10 democratic 0.00334
+```
+
+Evaluating a topic model
+========================================================
+
+- γ: per-document-per-topic probabilities
+    - i.e., the probability that a given document (here: Volume) belongs to a particular topic
+    
+
+```r
+tocq_gamma <- tidy(tocq_lda, matrix = "gamma")
+head(tocq_gamma, n = 10)
+```
+
+```
+# A tibble: 10 x 3
+   document topic      gamma
+   <chr>    <int>      <dbl>
+ 1 DiA2         1 0.00504   
+ 2 DiA1         1 0.0217    
+ 3 DiA2         2 0.198     
+ 4 DiA1         2 0.00000152
+ 5 DiA2         3 0.00000213
+ 6 DiA1         3 0.197     
+ 7 DiA2         4 0.216     
+ 8 DiA1         4 0.00000152
+ 9 DiA2         5 0.180     
+10 DiA1         5 0.00000152
+```
+
+Extensions
+========================================================
+
+- "Structural topic models": from [Roberts et al.](https://scholar.princeton.edu/files/bstewart/files/stmnips2013.pdf) and dedicated webpage [here](https://www.structuraltopicmodel.com/)
+- Stochastic block model approches: see [Gerlach et al.](https://advances.sciencemag.org/content/4/7/eaaq1360/) and Github repo [here](https://github.com/martingerlach/hSBM_Topicmodel)
