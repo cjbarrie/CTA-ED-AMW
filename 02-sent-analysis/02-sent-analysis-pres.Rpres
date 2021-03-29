@@ -8,8 +8,78 @@ transition: none
   website: https://cjbarrie.xyz     
   github: https://github.com/cjbarrie       
   Twitter: https://www.twitter.com/cbarrie
+  
+Sentiment analysis
+========================================================
 
-Running Your First Analysis: Tahrir Documents
+- Tokenizing
+- Counting words with dictionary
+- Denominating by totals
+
+========================================================
+
+<center>
+<img src="images/subjwellnhb.png" width=1450 height=900>
+</center>
+
+========================================================
+
+<center>
+<img src="images/prosocpnas.png" width=1450 height=900>
+</center>
+
+```{r, echo=F, message=F, warning=F}
+library(tidytext)
+library(janeaustenr)
+library(tidyverse)
+
+bookdata <- tibble(txt = prideprejudice)
+
+bwords <- bookdata %>%
+  unnest_tokens(word, txt) %>%
+  filter(!word %in% stop_words$word,
+         str_detect(word, "[a-z]")) %>%
+  count(word, sort=T)
+
+set.seed(1234)
+ranbwords <- sample(bwords$word, 50)
+
+bingsent <- get_sentiments("bing")
+
+```
+
+Sentiment analysis
+========================================================
+
+- A sample of words from Pride and Prejudice
+
+```{r, echo=F}
+
+ranbwords
+
+```
+
+Sentiment analysis
+========================================================
+
+```{r}
+bingsent <- get_sentiments("bing")
+bingsent
+```
+
+Sentiment analysis
+========================================================
+
+- Pride and Prejudice words tagged with sentiment 
+
+```{r, echo=F}
+bingsent %>%
+  filter(word %in% ranbwords)
+
+```
+
+
+Running Your Own Analysis: Tahrir Documents
 ========================================================
 
 ```{r, echo=F}
@@ -76,19 +146,7 @@ tidy_pamph %>%
   count(word, sort = TRUE)
 ```
 
-Order by data and index
-========================================================
-
-```{r}
-#order and format date
-tidy_pamph<- tidy_pamph %>%
-  arrange(date)
-
-tidy_pamph$order <- 1:nrow(tidy_pamph)
-
-```
-
-Order by data and index
+Order by date and index
 ========================================================
 
 ```{r}
@@ -147,7 +205,6 @@ head(pamph_nrc_sentiment)
 
 Plot
 ========================================================
-
 
 ```{r}
 pamph_nrc_sentiment %>%

@@ -8,8 +8,101 @@ transition: none
   website: https://cjbarrie.xyz     
   github: https://github.com/cjbarrie       
   Twitter: https://www.twitter.com/cbarrie
+  
+Sentiment analysis
+========================================================
 
-Running Your First Analysis: Tahrir Documents
+- Tokenizing
+- Counting words with dictionary
+- Denominating by totals
+
+========================================================
+
+<center>
+<img src="images/subjwellnhb.png" width=1450 height=900>
+</center>
+
+========================================================
+
+<center>
+<img src="images/prosocpnas.png" width=1450 height=900>
+</center>
+
+
+
+Sentiment analysis
+========================================================
+
+- A sample of words from Pride and Prejudice
+
+
+```
+ [1] "heightened"    "intimate"      "blue"          "suspicion"    
+ [5] "gaped"         "finest"        "creatures"     "pack"         
+ [9] "contribute"    "tradesman's"   "peculiarly"    "concealed"    
+[13] "cottagers"     "expostulation" "unjustly"      "founded"      
+[17] "adventure"     "conciliate"    "animation"     "abuse"        
+[21] "requited"      "guilty"        "repined"       "friend's"     
+[25] "accede"        "readily"       "appointment"   "sooner"       
+[29] "occasion's"    "lucases"       "beauteous"     "yawn"         
+[33] "travelling"    "counterpart"   "prudential"    "hertfordshire"
+[37] "temptations"   "jenkinson"     "levelled"      "clement's"    
+[41] "change"        "headstrong"    "importance"    "meryton"      
+[45] "quarreling"    "commencement"  "feet"          "longed"       
+[49] "resisting"     "bosoms"       
+```
+
+Sentiment analysis
+========================================================
+
+
+```r
+bingsent <- get_sentiments("bing")
+bingsent
+```
+
+```
+# A tibble: 6,786 x 2
+   word        sentiment
+   <chr>       <chr>    
+ 1 2-faces     negative 
+ 2 abnormal    negative 
+ 3 abolish     negative 
+ 4 abominable  negative 
+ 5 abominably  negative 
+ 6 abominate   negative 
+ 7 abomination negative 
+ 8 abort       negative 
+ 9 aborted     negative 
+10 aborts      negative 
+# … with 6,776 more rows
+```
+
+Sentiment analysis
+========================================================
+
+- Pride and Prejudice words tagged with sentiment 
+
+
+```
+# A tibble: 11 x 2
+   word       sentiment
+   <chr>      <chr>    
+ 1 abuse      negative 
+ 2 beauteous  positive 
+ 3 conciliate positive 
+ 4 finest     positive 
+ 5 guilty     negative 
+ 6 intimate   positive 
+ 7 peculiarly negative 
+ 8 readily    positive 
+ 9 suspicion  negative 
+10 unjustly   negative 
+11 yawn       negative 
+```
+
+
+Running Your Own Analysis: Tahrir Documents
 ========================================================
 
 
@@ -144,19 +237,7 @@ tidy_pamph %>%
 # … with 12,123 more rows
 ```
 
-Order by data and index
-========================================================
-
-
-```r
-#order and format date
-tidy_pamph<- tidy_pamph %>%
-  arrange(date)
-
-tidy_pamph$order <- 1:nrow(tidy_pamph)
-```
-
-Order by data and index
+Order by date and index
 ========================================================
 
 
@@ -254,7 +335,6 @@ Plot
 ========================================================
 
 
-
 ```r
 pamph_nrc_sentiment %>%
   ggplot(aes(date, sentiment)) +
@@ -262,4 +342,4 @@ pamph_nrc_sentiment %>%
   geom_smooth(method= loess, alpha=0.25)
 ```
 
-![plot of chunk unnamed-chunk-14](02-sent-analysis-pres-figure/unnamed-chunk-14-1.png)
+![plot of chunk unnamed-chunk-17](02-sent-analysis-pres-figure/unnamed-chunk-17-1.png)
